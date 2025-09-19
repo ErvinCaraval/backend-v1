@@ -166,6 +166,11 @@ io.on('connection', (socket) => {
   // Submit Answer
   socket.on('submitAnswer', async ({ gameId, uid, answerIndex }) => {
     try {
+      // Permitir recibir answerValue además de answerIndex
+      let answerValue = undefined;
+      if (typeof arguments[0] === 'object' && arguments[0] !== null && 'answerValue' in arguments[0]) {
+        answerValue = arguments[0].answerValue;
+      }
       const gameRef = db.collection('games').doc(gameId);
       const gameDoc = await gameRef.get();
       if (!gameDoc.exists) {
@@ -179,7 +184,9 @@ io.on('connection', (socket) => {
         return;
       }
       if (!socket.data.answers) socket.data.answers = {};
-      socket.data.answers[game.currentQuestion] = answerIndex;
+      // Guardar ambos: índice y valor
+      socket.data.answers[game.currentQuestion] = { answerIndex, answerValue };
+      socket.data.uid = uid;
       const sockets = await io.in(gameId).fetchSockets();
       const answers = {};
       sockets.forEach(s => {
@@ -187,12 +194,30 @@ io.on('connection', (socket) => {
           answers[s.data.uid] = s.data.answers[game.currentQuestion];
         }
       });
-      socket.data.uid = uid;
+      // Solo avanzar si todos respondieron
       if (Object.keys(answers).length === game.players.length) {
+        const correctValue = Array.isArray(currentQ.options) && typeof currentQ.correctAnswerIndex === 'number'
+          ? currentQ.options[currentQ.correctAnswerIndex]
+          : undefined;
         const updatedPlayers = game.players.map(player => {
-          const ans = answers[player.uid];
+          const ansObj = answers[player.uid];
           let score = player.score;
-          if (ans === currentQ.correctAnswerIndex) score += 1;
+          // Validar por valor, y si no hay valor, por índice
+          if (ansObj) {
+            if (
+              typeof ansObj.answerValue !== 'undefined' &&
+              typeof correctValue !== 'undefined' &&
+              ansObj.answerValue === correctValue
+            ) {
+              score += 1;
+            } else if (
+              typeof ansObj.answerIndex === 'number' &&
+              typeof currentQ.correctAnswerIndex === 'number' &&
+              ansObj.answerIndex === currentQ.correctAnswerIndex
+            ) {
+              score += 1;
+            }
+          }
           return { ...player, score };
         });
         await gameRef.update({ players: updatedPlayers });
@@ -229,20 +254,18 @@ async function sendQuestion(io, gameId, questionIndex) {
     return;
   }
   let question = game.questions[questionIndex];
-  // Si la pregunta tiene 'question', úsala. Si tiene 'text', mapea a 'question'. Si ninguna, error.
+  // Solo adaptar el campo 'question' si viene como 'text', pero JAMÁS modificar options ni correctAnswerIndex
   if (question) {
     if (!question.question && question.text) {
       const { text, ...rest } = question;
       question = { ...rest, question: text };
     } else if (!question.question && !question.text) {
-  // ...log eliminado...
       io.to(gameId).emit('newQuestion', { question: { question: 'Error: pregunta sin texto', options: [], correctAnswerIndex: null }, index: questionIndex });
       return;
     }
-  // ...log eliminado...
+    // Enviar la pregunta tal como está guardada (sin modificar options ni correctAnswerIndex)
     io.to(gameId).emit('newQuestion', { question, index: questionIndex });
   } else {
-  // ...log eliminado...
     io.to(gameId).emit('newQuestion', { question: { question: 'Error: pregunta no encontrada', options: [], correctAnswerIndex: null }, index: questionIndex });
   }
 }
