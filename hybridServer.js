@@ -274,7 +274,7 @@ io.on('connection', (socket) => {
                   if (player.email) baseUser.email = player.email;
                   baseUser.stats = stats;
                   t.set(userRef, baseUser);
-                  console.log(`[STATS] Usuario ${player.uid} no existía, se creó doc con datos:`, baseUser);
+
                 } else {
                   stats = userDoc.data().stats || stats;
                   baseUser = userDoc.data();
@@ -283,7 +283,7 @@ io.on('connection', (socket) => {
                 const wins = (stats.wins || 0) + (result === 'win' ? 1 : 0);
                 const correctAnswers = (stats.correctAnswers || 0) + (player.score || 0);
                 t.set(userRef, { ...baseUser, stats: { gamesPlayed, wins, correctAnswers } }, { merge: true });
-                console.log(`[STATS] Stats actualizados para ${player.uid}:`, { gamesPlayed, wins, correctAnswers });
+
               });
             }
           }

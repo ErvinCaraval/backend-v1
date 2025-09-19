@@ -50,7 +50,7 @@ exports.getStats = async (req, res) => {
   // Usar el UID autenticado si existe, o el de la query como fallback
   const uid = req.user?.uid || req.query.uid;
   if (!uid) {
-    console.warn('[getStats] Falta UID. req.user:', req.user, 'req.query:', req.query);
+
     return res.status(400).json({ error: 'Missing uid' });
   }
   try {
@@ -67,7 +67,7 @@ exports.getStats = async (req, res) => {
       };
       await userRef.set(newUser);
       userDoc = await userRef.get();
-      console.log(`[getStats] Documento de usuario creado para UID ${uid}:`, newUser);
+
     }
     // Devolver siempre un objeto profesional y completo
     const data = userDoc.data();
@@ -77,7 +77,7 @@ exports.getStats = async (req, res) => {
     };
     res.json(response);
   } catch (error) {
-    console.error('[getStats] Error:', error);
+
     res.status(400).json({ error: error.message });
   }
 };
