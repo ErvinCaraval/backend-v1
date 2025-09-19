@@ -1,13 +1,3 @@
-  title: BrainBlitz API - Documentación Detallada
-  version: 1.0.0
-  description: |
-    Bienvenido a la API de BrainBlitz, el backend para el juego de trivia multijugador.  
-    Aquí encontrarás todos los endpoints REST disponibles, sus parámetros, ejemplos de uso y descripciones claras para que puedas integrarte fácilmente, incluso si es tu primera vez trabajando con APIs.
-
-    **Notas importantes:**
-    - Todas las respuestas son en formato JSON.
-    - Algunos endpoints requieren autenticación mediante Firebase (token JWT).
-    - Puedes probar todos los endpoints desde `/api-docs` en el servidor en ejecución.
 
 openapi: 3.0.0
 info:

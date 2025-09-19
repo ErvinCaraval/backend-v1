@@ -1,7 +1,14 @@
 const admin = require('firebase-admin');
+const path = require('path');
 
-// Lee el JSON desde la variable de entorno
-const serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT_KEY);
+let serviceAccount;
+if (process.env.SERVICE_ACCOUNT_KEY) {
+  // Cloud: lee desde variable de entorno
+  serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT_KEY);
+} else {
+  // Local: lee desde archivo
+  serviceAccount = require(path.resolve(__dirname, 'serviceAccountKey.json'));
+}
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
