@@ -1,3 +1,14 @@
+  title: BrainBlitz API - Documentación Detallada
+  version: 1.0.0
+  description: |
+    Bienvenido a la API de BrainBlitz, el backend para el juego de trivia multijugador.  
+    Aquí encontrarás todos los endpoints REST disponibles, sus parámetros, ejemplos de uso y descripciones claras para que puedas integrarte fácilmente, incluso si es tu primera vez trabajando con APIs.
+
+    **Notas importantes:**
+    - Todas las respuestas son en formato JSON.
+    - Algunos endpoints requieren autenticación mediante Firebase (token JWT).
+    - Puedes probar todos los endpoints desde `/api-docs` en el servidor en ejecución.
+
 openapi: 3.0.0
 info:
   title: BrainBlitz API - Documentación Detallada
@@ -11,8 +22,20 @@ info:
     - Algunos endpoints requieren autenticación mediante Firebase (token JWT).
     - Puedes probar todos los endpoints desde `/api-docs` en el servidor en ejecución.
 
+    ---
+    ## Uso en la nube (Render)
+    - **Base URL:** `https://brainblitz-backend.onrender.com`
+    - Reemplaza `localhost:5000` por el URL de Render en todas tus peticiones.
+    - Prueba los endpoints en [https://brainblitz-backend.onrender.com/api-docs](https://brainblitz-backend.onrender.com/api-docs)
+    - Ejemplo:
+      ```bash
+      curl -X POST https://brainblitz-backend.onrender.com/api/users/register \
+        -H "Content-Type: application/json" \
+        -d '{"email":"test@correo.com","password":"123456","displayName":"Test"}'
+      ```
+
 servers:
-  - url: http://localhost:5000
+  - url: https://brainblitz-backend.onrender.com
 
 tags:
   - name: Users
