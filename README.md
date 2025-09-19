@@ -52,12 +52,12 @@ backend/
 
 > **La documentación interactiva y completa está en `/api-docs`** (Swagger UI). Incluye ejemplos reales y todos los parámetros posibles.
 
-
 ### Usuarios
 - `POST /api/users/register` — Registrar un nuevo usuario
 - `POST /api/users/login` — (Referencia, login se maneja en frontend con Firebase)
 - `POST /api/users/recover-password` — Recuperar contraseña
-- `GET /api/users/me/stats?uid=...` — Obtener estadísticas del usuario
+- `GET /api/users/me/stats?uid=...` — Obtener estadísticas del usuario (solo UID y stats)
+- `GET /api/users/me/history` — (Deshabilitado, siempre devuelve [])
 
 
 ### Partidas
@@ -98,6 +98,11 @@ backend/
 4. El host inicia la partida (`startGame`).
 5. Los jugadores responden (`submitAnswer`).
 6. El backend gestiona el avance y puntajes.
+
+## Notas recientes
+- El historial de partidas y los datos personales (email, nombre) han sido eliminados del perfil y de las respuestas de la API.
+- El endpoint `/api/users/me/history` está deshabilitado y solo devuelve un array vacío.
+- El endpoint `/api/users/me/stats` solo devuelve UID y estadísticas.
 
 ---
 

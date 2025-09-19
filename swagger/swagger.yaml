@@ -170,12 +170,9 @@ paths:
               schema:
                 type: object
                 properties:
-                  email:
+                  uid:
                     type: string
-                    example: "maria.garcia@gmail.com"
-                  displayName:
-                    type: string
-                    example: "Maria Garcia"
+                    example: "u7d8f9g0h1i2j3k4l5m6n7o8p9"
                   stats:
                     type: object
                     properties:
@@ -192,8 +189,7 @@ paths:
                         example: 87
                         description: "Total de respuestas correctas."
               example:
-                email: "maria.garcia@gmail.com"
-                displayName: "Maria Garcia"
+                uid: "u7d8f9g0h1i2j3k4l5m6n7o8p9"
                 stats:
                   gamesPlayed: 12
                   wins: 4
@@ -210,6 +206,22 @@ paths:
                     example: "User not found"
               example:
                 error: "User not found"
+
+  /api/users/me/history:
+    get:
+      tags: [Users]
+      summary: (Deshabilitado) Historial de partidas
+      description: |
+        Este endpoint está deshabilitado y siempre devuelve un array vacío.
+      responses:
+        200:
+          description: Historial vacío.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: {}
+              example: []
 
   /api/games:
     get:

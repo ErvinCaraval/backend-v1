@@ -1,18 +1,7 @@
 // Obtener historial de partidas del usuario
 exports.getHistory = async (req, res) => {
-  const { uid } = req.query;
-  if (!uid) return res.status(400).json({ error: 'Missing uid' });
-  try {
-    const snapshot = await db.collection('gameResults')
-      .where('uid', '==', uid)
-      .orderBy('date', 'desc')
-      .limit(50)
-      .get();
-    const history = snapshot.docs.map(doc => doc.data());
-    res.json(history);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+  // Historial de partidas deshabilitado profesionalmente
+  res.json([]);
 };
 const { auth, db } = require('../firebase');
 
@@ -58,12 +47,37 @@ exports.recoverPassword = async (req, res) => {
 // Get user stats
 exports.getStats = async (req, res) => {
   // In production, validate user identity (e.g., via Firebase ID token)
-  const { uid } = req.query;
+  // Usar el UID autenticado si existe, o el de la query como fallback
+  const uid = req.user?.uid || req.query.uid;
+  if (!uid) {
+    console.warn('[getStats] Falta UID. req.user:', req.user, 'req.query:', req.query);
+    return res.status(400).json({ error: 'Missing uid' });
+  }
   try {
-    const userDoc = await db.collection('users').doc(uid).get();
-    if (!userDoc.exists) return res.status(404).json({ error: 'User not found' });
-    res.json(userDoc.data());
+    const userRef = db.collection('users').doc(uid);
+    let userDoc = await userRef.get();
+    if (!userDoc.exists) {
+      // Crear el documento si no existe, usando datos del token JWT si están disponibles
+      const displayName = req.user?.name || req.user?.displayName || '';
+      const email = req.user?.email || '';
+      const newUser = {
+        displayName,
+        email,
+        stats: { gamesPlayed: 0, wins: 0, correctAnswers: 0 }
+      };
+      await userRef.set(newUser);
+      userDoc = await userRef.get();
+      console.log(`[getStats] Documento de usuario creado para UID ${uid}:`, newUser);
+    }
+    // Devolver siempre un objeto profesional y completo
+    const data = userDoc.data();
+    const response = {
+      uid,
+      stats: data.stats || { gamesPlayed: 0, wins: 0, correctAnswers: 0 }
+    };
+    res.json(response);
   } catch (error) {
+    console.error('[getStats] Error:', error);
     res.status(400).json({ error: error.message });
   }
 };

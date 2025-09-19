@@ -247,6 +247,8 @@ io.on('connection', (socket) => {
               const result = player.score === maxScore && maxScore > 0
                 ? 'win'
                 : (players.filter(p => p.score === maxScore).length > 1 ? 'draw' : 'lose');
+              // Determinar si el jugador fue host
+              const isHost = finalGame.hostId === player.uid;
               await db.collection('gameResults').add({
                 uid: player.uid,
                 gameId: gameId,
@@ -254,20 +256,34 @@ io.on('connection', (socket) => {
                 score: player.score,
                 result,
                 players: players.map(p => ({ uid: p.uid, displayName: p.displayName, score: p.score })),
-                questionsCount
+                questionsCount,
+                topic: finalGame.topic || '',
+                difficulty: finalGame.difficulty || '',
+                isHost
               });
 
-              // Actualizar estadísticas del usuario
+              // Actualizar estadísticas del usuario, crear doc si no existe
               const userRef = db.collection('users').doc(player.uid);
               await db.runTransaction(async (t) => {
                 const userDoc = await t.get(userRef);
-                if (!userDoc.exists) return;
-                const stats = userDoc.data().stats || {};
+                let stats = { gamesPlayed: 0, wins: 0, correctAnswers: 0 };
+                let baseUser = {};
+                if (!userDoc.exists) {
+                  // Si hay displayName/email en player, los guardamos
+                  if (player.displayName) baseUser.displayName = player.displayName;
+                  if (player.email) baseUser.email = player.email;
+                  baseUser.stats = stats;
+                  t.set(userRef, baseUser);
+                  console.log(`[STATS] Usuario ${player.uid} no existía, se creó doc con datos:`, baseUser);
+                } else {
+                  stats = userDoc.data().stats || stats;
+                  baseUser = userDoc.data();
+                }
                 const gamesPlayed = (stats.gamesPlayed || 0) + 1;
                 const wins = (stats.wins || 0) + (result === 'win' ? 1 : 0);
-                // Calcular respuestas correctas sumando el score de la partida
                 const correctAnswers = (stats.correctAnswers || 0) + (player.score || 0);
-                t.update(userRef, { 'stats.gamesPlayed': gamesPlayed, 'stats.wins': wins, 'stats.correctAnswers': correctAnswers });
+                t.set(userRef, { ...baseUser, stats: { gamesPlayed, wins, correctAnswers } }, { merge: true });
+                console.log(`[STATS] Stats actualizados para ${player.uid}:`, { gamesPlayed, wins, correctAnswers });
               });
             }
           }
