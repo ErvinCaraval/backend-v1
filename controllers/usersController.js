@@ -1,3 +1,19 @@
+// Obtener historial de partidas del usuario
+exports.getHistory = async (req, res) => {
+  const { uid } = req.query;
+  if (!uid) return res.status(400).json({ error: 'Missing uid' });
+  try {
+    const snapshot = await db.collection('gameResults')
+      .where('uid', '==', uid)
+      .orderBy('date', 'desc')
+      .limit(50)
+      .get();
+    const history = snapshot.docs.map(doc => doc.data());
+    res.json(history);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
 const { auth, db } = require('../firebase');
 
 // Register a new user

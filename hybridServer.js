@@ -234,6 +234,42 @@ io.on('connection', (socket) => {
           } else {
             await gameRef.update({ status: 'finished' });
             io.to(gameId).emit('gameFinished', { players: updatedPlayers });
+
+            // Guardar historial de partida para cada jugador
+            const gameDocFinal = await gameRef.get();
+            const finalGame = gameDocFinal.data();
+            const now = new Date();
+            const players = finalGame.players || [];
+            const questionsCount = Array.isArray(finalGame.questions) ? finalGame.questions.length : 0;
+            // Determinar el score más alto
+            const maxScore = Math.max(...players.map(p => p.score));
+            for (const player of players) {
+              const result = player.score === maxScore && maxScore > 0
+                ? 'win'
+                : (players.filter(p => p.score === maxScore).length > 1 ? 'draw' : 'lose');
+              await db.collection('gameResults').add({
+                uid: player.uid,
+                gameId: gameId,
+                date: now.toISOString(),
+                score: player.score,
+                result,
+                players: players.map(p => ({ uid: p.uid, displayName: p.displayName, score: p.score })),
+                questionsCount
+              });
+
+              // Actualizar estadísticas del usuario
+              const userRef = db.collection('users').doc(player.uid);
+              await db.runTransaction(async (t) => {
+                const userDoc = await t.get(userRef);
+                if (!userDoc.exists) return;
+                const stats = userDoc.data().stats || {};
+                const gamesPlayed = (stats.gamesPlayed || 0) + 1;
+                const wins = (stats.wins || 0) + (result === 'win' ? 1 : 0);
+                // Calcular respuestas correctas sumando el score de la partida
+                const correctAnswers = (stats.correctAnswers || 0) + (player.score || 0);
+                t.update(userRef, { 'stats.gamesPlayed': gamesPlayed, 'stats.wins': wins, 'stats.correctAnswers': correctAnswers });
+              });
+            }
           }
         }, 3000);
       }
