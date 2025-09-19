@@ -1,0 +1,734 @@
+openapi: 3.0.0
+info:
+  title: BrainBlitz API - Documentación Detallada
+  version: 1.0.0
+  description: |
+    Bienvenido a la API de BrainBlitz, el backend para el juego de trivia multijugador.  
+    Aquí encontrarás todos los endpoints REST disponibles, sus parámetros, ejemplos de uso y descripciones claras para que puedas integrarte fácilmente, incluso si es tu primera vez trabajando con APIs.
+
+    **Notas importantes:**
+    - Todas las respuestas son en formato JSON.
+    - Algunos endpoints requieren autenticación mediante Firebase (token JWT).
+    - Puedes probar todos los endpoints desde `/api-docs` en el servidor en ejecución.
+
+servers:
+  - url: http://localhost:5000
+
+tags:
+  - name: Users
+    description: Registro, autenticación y estadísticas de usuario.
+  - name: Games
+    description: Gestión de partidas multijugador.
+  - name: Questions
+    description: Gestión y consulta de preguntas de trivia.
+  - name: AI
+    description: Generación de preguntas con inteligencia artificial.
+
+paths:
+  /api/users/register:
+    post:
+      tags: [Users]
+      summary: Registrar un nuevo usuario
+      description: |
+        Crea un nuevo usuario en el sistema.  
+        **Nota:** El registro también crea el usuario en Firebase Auth y en la base de datos de usuarios.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, displayName]
+              properties:
+                email:
+                  type: string
+                  example: "maria.garcia@gmail.com"
+                  description: "Correo electrónico único del usuario. Ejemplo real: maria.garcia@gmail.com"
+                password:
+                  type: string
+                  example: "MiClaveSegura2025!"
+                  description: "Contraseña segura (mínimo 8 caracteres, mayúsculas, minúsculas y símbolos)."
+                displayName:
+                  type: string
+                  example: "Maria Garcia"
+                  description: "Nombre visible del usuario en el juego."
+            example:
+              email: "maria.garcia@gmail.com"
+              password: "MiClaveSegura2025!"
+              displayName: "Maria Garcia"
+      responses:
+        201:
+          description: Usuario registrado correctamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  uid:
+                    type: string
+                    example: "u7d8f9g0h1i2j3k4l5m6n7o8p9"
+                    description: "UID generado por Firebase Auth. Ejemplo real: u7d8f9g0h1i2j3k4l5m6n7o8p9"
+                  email:
+                    type: string
+                    example: "maria.garcia@gmail.com"
+                  displayName:
+                    type: string
+                    example: "Maria Garcia"
+              example:
+                uid: "u7d8f9g0h1i2j3k4l5m6n7o8p9"
+                email: "maria.garcia@gmail.com"
+                displayName: "Maria Garcia"
+        400:
+          description: Error en el registro (por ejemplo, email ya registrado).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "El email ya está en uso."
+              example:
+                error: "El email ya está en uso."
+
+  /api/users/login:
+    post:
+      tags: [Users]
+      summary: Login de usuario (Referencia)
+      description: |
+        Este endpoint es solo de referencia.  
+        El login real se realiza en el frontend usando Firebase Auth.
+      responses:
+        501:
+          description: Login manejado en el cliente.
+
+  /api/users/recover-password:
+    post:
+      tags: [Users]
+      summary: Recuperar contraseña
+      description: |
+        Envía un correo de recuperación de contraseña al usuario.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+                  example: "maria.garcia@gmail.com"
+            example:
+              email: "maria.garcia@gmail.com"
+      responses:
+        200:
+          description: Email de recuperación enviado.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Se ha enviado un correo de recuperación a maria.garcia@gmail.com."
+              example:
+                message: "Se ha enviado un correo de recuperación a maria.garcia@gmail.com."
+        400:
+          description: Error al enviar email.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "No se pudo enviar el correo."
+              example:
+                error: "No se pudo enviar el correo."
+
+  /api/users/me/stats:
+    get:
+      tags: [Users]
+      summary: Obtener estadísticas del usuario
+      description: |
+        Devuelve las estadísticas del usuario autenticado.  
+        **Requiere:** UID del usuario como parámetro de consulta.
+      parameters:
+        - in: query
+          name: uid
+          schema:
+            type: string
+          required: true
+          description: UID del usuario (lo obtienes tras el login).
+          example: "u7d8f9g0h1i2j3k4l5m6n7o8p9"
+      responses:
+        200:
+          description: Estadísticas del usuario encontradas.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                    example: "maria.garcia@gmail.com"
+                  displayName:
+                    type: string
+                    example: "Maria Garcia"
+                  stats:
+                    type: object
+                    properties:
+                      gamesPlayed:
+                        type: integer
+                        example: 12
+                        description: "Número total de partidas jugadas por el usuario."
+                      wins:
+                        type: integer
+                        example: 4
+                        description: "Partidas ganadas por el usuario."
+                      correctAnswers:
+                        type: integer
+                        example: 87
+                        description: "Total de respuestas correctas."
+              example:
+                email: "maria.garcia@gmail.com"
+                displayName: "Maria Garcia"
+                stats:
+                  gamesPlayed: 12
+                  wins: 4
+                  correctAnswers: 87
+        404:
+          description: Usuario no encontrado.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "User not found"
+              example:
+                error: "User not found"
+
+  /api/games:
+    get:
+      tags: [Games]
+      summary: Listar partidas públicas disponibles
+      description: |
+        Devuelve todas las partidas públicas que están esperando jugadores.
+      responses:
+        200:
+          description: Lista de partidas públicas.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: "game_20250918_001"
+                      description: "ID único de la partida. Ejemplo real: game_20250918_001"
+                    isPublic:
+                      type: boolean
+                      example: true
+                      description: "Si la partida es pública (cualquiera puede unirse)."
+                    status:
+                      type: string
+                      example: "waiting"
+                      description: "Estado de la partida (waiting, started, finished)."
+                    players:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          uid:
+                            type: string
+                            example: "u7d8f9g0h1i2j3k4l5m6n7o8p9"
+                          displayName:
+                            type: string
+                            example: "Maria Garcia"
+                      description: "Lista de jugadores en la partida."
+                    topic:
+                      type: string
+                      example: "Cultura General"
+                      description: "Tema principal de la partida."
+                    questions:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Question'
+                      description: "Preguntas asignadas a la partida."
+              example:
+                - id: "game_20250918_001"
+                  isPublic: true
+                  status: "waiting"
+                  players:
+                    - uid: "u7d8f9g0h1i2j3k4l5m6n7o8p9"
+                      displayName: "Maria Garcia"
+                    - uid: "u1a2b3c4d5e6f7g8h9i0j1k2l3"
+                      displayName: "Carlos Perez"
+                  topic: "Cultura General"
+                  questions:
+                    - text: "¿Cuál es el río más largo del mundo?"
+                      options: ["Nilo", "Amazonas", "Yangtsé", "Misisipi"]
+                      correctAnswerIndex: 1
+                      category: "Geografía"
+                      difficulty: "medium"
+                      explanation: "El río Amazonas es el más largo del mundo, superando al Nilo en longitud total."
+
+  /api/questions:
+    get:
+      tags: [Questions]
+      summary: Obtener todas las preguntas
+      description: |
+        Devuelve todas las preguntas almacenadas en la base de datos.
+      responses:
+        200:
+          description: Lista de preguntas.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Question'
+              example:
+                - text: "¿Cuál es el río más largo del mundo?"
+                  options: ["Nilo", "Amazonas", "Yangtsé", "Misisipi"]
+                  correctAnswerIndex: 1
+                  category: "Geografía"
+                  difficulty: "medium"
+                  explanation: "El río Amazonas es el más largo del mundo, superando al Nilo en longitud total."
+                - text: "¿Quién escribió 'Cien años de soledad'?"
+                  options: ["Mario Vargas Llosa", "Gabriel García Márquez", "Julio Cortázar", "Isabel Allende"]
+                  correctAnswerIndex: 1
+                  category: "Literatura"
+                  difficulty: "easy"
+                  explanation: "Gabriel García Márquez es el autor de 'Cien años de soledad'."
+
+    post:
+      tags: [Questions]
+      summary: Crear una nueva pregunta
+      description: |
+        Crea una pregunta manualmente.  
+        **Ejemplo de cuerpo:**
+        ```
+        {
+          "text": "¿Cuál es la capital de Francia?",
+          "options": ["Madrid", "París", "Roma", "Berlín"],
+          "correctAnswerIndex": 1,
+          "category": "Geografía",
+          "difficulty": "easy",
+          "explanation": "París es la capital de Francia."
+        }
+        ```
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Question'
+            example:
+              text: "¿Quién escribió 'Cien años de soledad'?"
+              options: ["Mario Vargas Llosa", "Gabriel García Márquez", "Julio Cortázar", "Isabel Allende"]
+              correctAnswerIndex: 1
+              category: "Literatura"
+              difficulty: "easy"
+              explanation: "Gabriel García Márquez es el autor de 'Cien años de soledad'."
+      responses:
+        201:
+          description: Pregunta creada.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "question123"
+              example:
+                id: "question123"
+        400:
+          description: Error al crear pregunta.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Faltan campos obligatorios."
+              example:
+                error: "Faltan campos obligatorios."
+
+  /api/questions/bulk:
+    post:
+      tags: [Questions]
+      summary: Crear varias preguntas en lote
+      description: |
+        Permite crear varias preguntas a la vez (por ejemplo, tras generar con IA).
+        **Ejemplo de cuerpo:**
+        ```
+        {
+          "questions": [
+            {
+              "text": "¿Cuál es la capital de Francia?",
+              "options": ["Madrid", "París", "Roma", "Berlín"],
+              "correctAnswerIndex": 1,
+              "category": "Geografía",
+              "difficulty": "easy",
+              "explanation": "París es la capital de Francia."
+            },
+            {
+              "text": "¿Quién pintó la Mona Lisa?",
+              "options": ["Van Gogh", "Picasso", "Da Vinci", "Rembrandt"],
+              "correctAnswerIndex": 2,
+              "category": "Arte",
+              "difficulty": "medium",
+              "explanation": "Leonardo da Vinci pintó la Mona Lisa."
+            }
+          ]
+        }
+        ```
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                questions:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Question'
+            example:
+              questions:
+                - text: "¿Cuál es el río más largo del mundo?"
+                  options: ["Nilo", "Amazonas", "Yangtsé", "Misisipi"]
+                  correctAnswerIndex: 1
+                  category: "Geografía"
+                  difficulty: "medium"
+                  explanation: "El río Amazonas es el más largo del mundo, superando al Nilo en longitud total."
+                - text: "¿Quién escribió 'Cien años de soledad'?"
+                  options: ["Mario Vargas Llosa", "Gabriel García Márquez", "Julio Cortázar", "Isabel Allende"]
+                  correctAnswerIndex: 1
+                  category: "Literatura"
+                  difficulty: "easy"
+                  explanation: "Gabriel García Márquez es el autor de 'Cien años de soledad'."
+      responses:
+        200:
+          description: Preguntas creadas exitosamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+              example:
+                success: true
+        400:
+          description: Error al crear preguntas.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "No questions provided"
+              example:
+                error: "No questions provided"
+
+  /api/questions/{id}:
+    put:
+      tags: [Questions]
+      summary: Actualizar una pregunta existente
+      description: |
+        Actualiza una pregunta por su ID.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID de la pregunta a actualizar.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Question'
+            example:
+              text: "¿Quién escribió 'Cien años de soledad'?"
+              options: ["Mario Vargas Llosa", "Gabriel García Márquez", "Julio Cortázar", "Isabel Allende"]
+              correctAnswerIndex: 1
+              category: "Literatura"
+              difficulty: "easy"
+              explanation: "Gabriel García Márquez es el autor de 'Cien años de soledad'."
+      responses:
+        200:
+          description: Pregunta actualizada.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Question updated"
+              example:
+                message: "Question updated"
+        400:
+          description: Error al actualizar pregunta.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Pregunta no encontrada."
+              example:
+                error: "Pregunta no encontrada."
+
+    delete:
+      tags: [Questions]
+      summary: Eliminar una pregunta
+      description: |
+        Elimina una pregunta por su ID.
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID de la pregunta a eliminar.
+      responses:
+        200:
+          description: Pregunta eliminada.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Question deleted"
+              example:
+                message: "Question deleted"
+        400:
+          description: Error al eliminar pregunta.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Pregunta no encontrada."
+              example:
+                error: "Pregunta no encontrada."
+
+  /api/ai/generate-questions:
+    post:
+      tags: [AI]
+      summary: Generar preguntas con IA
+      description: |
+        Genera preguntas de trivia usando inteligencia artificial (Groq/OpenAI).  
+        **Requiere:** API Key configurada en el backend.
+        **Ejemplo de cuerpo:**
+        ```
+        {
+          "topic": "Ciencia",
+          "difficulty": "medium",
+          "count": 3,
+          "useAI": true
+        }
+        ```
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [topic, difficulty, count, useAI]
+              properties:
+                topic:
+                  type: string
+                  example: "Ciencia"
+                difficulty:
+                  type: string
+                  example: "medium"
+                count:
+                  type: integer
+                  example: 3
+                useAI:
+                  type: boolean
+                  example: true
+            example:
+              topic: "Ciencia"
+              difficulty: "medium"
+              count: 3
+              useAI: true
+      responses:
+        200:
+          description: Preguntas generadas exitosamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  topic:
+                    type: string
+                    example: "Ciencia"
+                  difficulty:
+                    type: string
+                    example: "medium"
+                  count:
+                    type: integer
+                    example: 3
+                  questions:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Question'
+              example:
+                success: true
+                topic: "Ciencia"
+                difficulty: "medium"
+                count: 3
+                questions:
+                  - text: "¿Cuál es el elemento químico con símbolo 'O'?"
+                    options: ["Oro", "Oxígeno", "Osmio", "Oxalato"]
+                    correctAnswerIndex: 1
+                    category: "Ciencia"
+                    difficulty: "easy"
+                    explanation: "El símbolo 'O' corresponde al Oxígeno."
+                  - text: "¿Quién propuso la teoría de la relatividad?"
+                    options: ["Isaac Newton", "Albert Einstein", "Marie Curie", "Niels Bohr"]
+                    correctAnswerIndex: 1
+                    category: "Ciencia"
+                    difficulty: "medium"
+                    explanation: "Albert Einstein propuso la teoría de la relatividad."
+        400:
+          description: Error en la generación de preguntas.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Debes activar el modo IA para generar preguntas."
+              example:
+                error: "Debes activar el modo IA para generar preguntas."
+
+  /api/ai/topics:
+    get:
+      tags: [AI]
+      summary: Obtener lista de temas disponibles para preguntas IA
+      description: |
+        Devuelve una lista de temas que puedes usar para generar preguntas con IA.
+      responses:
+        200:
+          description: Lista de temas.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  topics:
+                    type: array
+                    items:
+                      type: string
+                    example: ["Ciencia", "Historia", "Geografía"]
+              example:
+                success: true
+                topics: ["Ciencia", "Historia", "Geografía", "Arte", "Deportes"]
+
+  /api/ai/difficulty-levels:
+    get:
+      tags: [AI]
+      summary: Obtener niveles de dificultad disponibles
+      description: |
+        Devuelve los niveles de dificultad soportados por la IA.
+      responses:
+        200:
+          description: Lista de niveles de dificultad.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  levels:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        value:
+                          type: string
+                          example: "easy"
+                        label:
+                          type: string
+                          example: "Fácil"
+              example:
+                success: true
+                levels:
+                  - value: "easy"
+                    label: "Fácil"
+                  - value: "medium"
+                    label: "Intermedio"
+                  - value: "hard"
+                    label: "Difícil"
+
+components:
+  schemas:
+    Question:
+      type: object
+      required: [text, options, correctAnswerIndex, category, difficulty, explanation]
+      properties:
+        text:
+          type: string
+          description: "Texto de la pregunta. Ejemplo real: ¿Cuál es el río más largo del mundo?"
+          example: "¿Cuál es el río más largo del mundo?"
+        options:
+          type: array
+          description: "Opciones de respuesta. Ejemplo real: [Nilo, Amazonas, Yangtsé, Misisipi]"
+          items:
+            type: string
+          example: ["Nilo", "Amazonas", "Yangtsé", "Misisipi"]
+        correctAnswerIndex:
+          type: integer
+          description: "Índice de la opción correcta (en el ejemplo, Amazonas)."
+          example: 1
+        category:
+          type: string
+          description: "Categoría o tema de la pregunta. Ejemplo real: Geografía"
+          example: "Geografía"
+        difficulty:
+          type: string
+          description: "Dificultad de la pregunta (easy, medium, hard). Ejemplo real: medium"
+          example: "medium"
+        explanation:
+          type: string
+          description: "Explicación de la respuesta correcta. Ejemplo real: El río Amazonas es el más largo del mundo, superando al Nilo en longitud total."
+          example: "El río Amazonas es el más largo del mundo, superando al Nilo en longitud total."
+        createdBy:
+          type: string
+          description: "UID del creador de la pregunta. Ejemplo real: u7d8f9g0h1i2j3k4l5m6n7o8p9"
+          example: "u7d8f9g0h1i2j3k4l5m6n7o8p9"
+        createdAt:
+          type: integer
+          description: "Timestamp de creación en milisegundos. Ejemplo real: 1758172800000 (18 septiembre 2025)"
+          example: 1758172800000

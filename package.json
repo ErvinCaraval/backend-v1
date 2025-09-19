@@ -1,0 +1,28 @@
+{
+  "name": "brainblitz-backend",
+  "version": "1.0.0",
+  "main": "hybridServer.js",
+  "type": "commonjs",
+  "scripts": {
+  "start": "node hybridServer.js",
+  "dev": "nodemon hybridServer.js",
+    "mock": "node mockServer.js",
+    "mock-dev": "nodemon mockServer.js",
+    "hybrid": "node hybridServer.js",
+    "hybrid-dev": "nodemon hybridServer.js"
+  },
+  "dependencies": {
+    "axios": "^1.12.2",
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.18.2",
+    "firebase-admin": "^13.5.0",
+    "js-yaml": "^3.14.1",
+    "socket.io": "^4.7.5",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3"
+  }
+}
