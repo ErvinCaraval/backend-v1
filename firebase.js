@@ -1,9 +1,7 @@
-// Firebase Admin SDK initialization for backend
 const admin = require('firebase-admin');
-const path = require('path');
 
-// Path to your service account key JSON file
-const serviceAccount = require(path.resolve(__dirname, 'serviceAccountKey.json'));
+// Lee el JSON desde la variable de entorno
+const serviceAccount = JSON.parse(process.env.SERVICE_ACCOUNT_KEY);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
