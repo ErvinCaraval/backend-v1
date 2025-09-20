@@ -162,3 +162,70 @@ GROQ_MODEL=llama-3.1-8b-instant
 
 Para dudas o mejoras, revisa el código fuente o la documentación Swagger. El backend está listo para integrarse con cualquier frontend moderno.
 Si encuentras errores, revisa primero la consola y la documentación Swagger antes de abrir un issue.
+
+
+---
+
+## Cómo crear issues automáticamente desde la consola local (GitHub CLI)
+
+Este proyecto utiliza historias de usuario (HU) y pruebas gestionadas como issues en GitHub. Puedes crear issues de forma automática desde tu consola local usando la GitHub CLI (`gh`).
+
+### 1. Instalar GitHub CLI
+
+Sigue la guía oficial: https://cli.github.com/manual/installation
+
+### 2. Autenticarse en GitHub CLI
+
+```bash
+gh auth login
+```
+
+### 3. Crear labels personalizados (solo la primera vez)
+
+```bash
+gh label create "user-story" --color "#0366d6" --description "Historias de usuario para el backend"
+gh label create "status:done" --color "#0e8a16" --description "Tarea completada"
+gh label create "status:pending" --color "#e4e669" --description "Tarea pendiente de realizar"
+gh label create "priority:high" --color "#b60205" --description "Alta prioridad"
+gh label create "priority:medium" --color "#d93f0b" --description "Prioridad media"
+gh label create "priority:low" --color "#fbca04" --description "Baja prioridad"
+gh label create "backend" --color "#5319e7" --description "Relacionado al backend"
+```
+
+### 4. Crear issues automáticamente
+
+Ejemplo para una historia de usuario:
+
+```bash
+gh issue create --title "HU1. Registro de usuario" \
+--body "Como nuevo jugador, quiero registrarme proporcionando mi email, contraseña y nombre visible, para poder acceder y participar en el juego.\n\nCriterios de aceptación:\n- El usuario puede enviar sus datos a POST /api/users/register.\n- Si el email ya existe, recibe un mensaje de error.\n- Si el registro es exitoso, recibe confirmación y sus datos básicos." \
+--label "user-story,status:done,priority:high,backend"
+```
+
+Puedes repetir el comando para cada HU, cambiando el título, cuerpo y prioridad según corresponda. Para las historias de usuario de pruebas, usa el label `status:pending` en vez de `status:done`.
+
+### 5. Cerrar issues desde la consola
+
+Para cerrar un issue (por número):
+
+```bash
+gh issue close 1
+```
+
+Para cerrar todos los issues abiertos con un solo comando (útil si todas las tareas están terminadas):
+
+```bash
+gh issue list --state open --json number --jq ".[].number" | xargs -n1 gh issue close
+```
+
+### 6. Explicación de labels
+
+- **user-story**: Historias de usuario funcionales o técnicas.
+- **status:done**: Issue completada y cerrada.
+- **status:pending**: Issue pendiente de realizar (por ejemplo, pruebas).
+- **priority:high|medium|low**: Nivel de prioridad de la tarea.
+- **backend**: Relacionado con la lógica del backend.
+
+---
+
+
