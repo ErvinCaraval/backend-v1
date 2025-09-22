@@ -1,4 +1,3 @@
-
 # BrainBlitz Backend
 
 ## Producción
@@ -127,6 +126,58 @@ GROQ_MODEL=llama-3.1-8b-instant
 
 ---
 
+## 🧪 Testing y Calidad de Código
+
+### Ejecutar Pruebas
+
+```bash
+# Todas las pruebas
+npm test
+
+# Pruebas con coverage
+npm run test:coverage
+
+# Solo pruebas unitarias
+npm run test:unit
+
+# Solo pruebas de integración
+npm run test:integration
+
+# Modo watch (desarrollo)
+npm run test:watch
+```
+
+### Estructura de Pruebas
+
+```
+tests/
+├── unit/                    # Pruebas unitarias (HU19-36)
+│   ├── controllers/         # Controladores individuales
+│   └── services/           # Servicios y utilidades
+├── integration/            # Pruebas de integración
+│   ├── api/                # Flujos completos de API
+│   └── websockets/         # Pruebas de WebSockets
+├── manual/                 # Pruebas manuales
+│   ├── postman-collection.json
+│   └── websocket-test.html
+└── setup.js               # Configuración global
+```
+
+### Cobertura de Historias de Usuario
+
+- **HU19-21**: Pruebas de usuarios (registro, stats, recuperación)
+- **HU22**: Pruebas de listado de partidas públicas
+- **HU23-27**: Pruebas completas de WebSockets (crear, unir, iniciar, responder, finalizar)
+- **HU28-32**: Pruebas de gestión de preguntas (CRUD completo)
+- **HU33-36**: Pruebas de generación IA (temas, dificultad, generación)
+
+### Pruebas Manuales
+
+1. **Postman Collection**: Importa `tests/manual/postman-collection.json`
+2. **WebSocket Tester**: Abre `tests/manual/websocket-test.html` en tu navegador
+3. **Swagger UI**: Accede a `/api-docs` para probar endpoints interactivamente
+
+---
 
 ## Cómo levantar el backend
 
@@ -227,5 +278,3 @@ gh issue list --state open --json number --jq ".[].number" | xargs -n1 gh issue 
 - **backend**: Relacionado con la lógica del backend.
 
 ---
-
-
