@@ -1,6 +1,6 @@
 // Obtener historial de partidas del usuario
 exports.getHistory = async (req, res) => {
-  // Historial de partidas deshabilitado profesionalmente
+  // Historial de partidas deshabilitado 
   res.json([]);
 };
 const { auth, db } = require('../firebase');
@@ -29,7 +29,7 @@ exports.register = async (req, res) => {
 
 // Login (session endpoint, optional)
 exports.login = async (req, res) => {
-  // Normally handled client-side with Firebase Auth
+  
   res.status(501).json({ error: 'Login handled on client.' });
 };
 
@@ -57,7 +57,6 @@ exports.getStats = async (req, res) => {
     const userRef = db.collection('users').doc(uid);
     let userDoc = await userRef.get();
     if (!userDoc.exists) {
-      // Crear el documento si no existe, usando datos del token JWT si están disponibles
       const displayName = req.user?.name || req.user?.displayName || '';
       const email = req.user?.email || '';
       const newUser = {
@@ -69,7 +68,6 @@ exports.getStats = async (req, res) => {
       userDoc = await userRef.get();
 
     }
-    // Devolver siempre un objeto profesional y completo
     const data = userDoc.data();
     const response = {
       uid,

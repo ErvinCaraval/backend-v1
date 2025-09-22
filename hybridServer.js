@@ -33,17 +33,16 @@ app.use('/api/ai', require('./routes/ai'));
 io.on('connection', (socket) => {
   // Listener para enviar la primera pregunta al socket que lo solicita
   socket.on('requestQuestion', async ({ gameId }) => {
-  // ...log eliminado...
+
     socket.join(gameId); // Unir a la room antes de enviar la pregunta
     await sendQuestion(io, gameId, 0);
   });
-  // ...log eliminado...
+
 
   // Create Game
   socket.on('createGame', async (options) => {
     try {
       // Log del token recibido
-  // ...log eliminado...
       // Validar el token de autenticación
       if (!options.token) {
         socket.emit('error', { error: 'Missing authentication token' });
@@ -53,7 +52,6 @@ io.on('connection', (socket) => {
       try {
         decodedToken = await auth.verifyIdToken(options.token);
       } catch (err) {
-  // ...log eliminado...
         socket.emit('error', { error: 'Invalid authentication token: ' + err.message });
         return;
       }
@@ -91,8 +89,7 @@ io.on('connection', (socket) => {
       if (options.count && mappedQuestions.length > options.count) {
         mappedQuestions = mappedQuestions.slice(0, options.count);
       }
-      // Log de las preguntas que se usarán en la partida
-  // ...log eliminado...
+  
       const gameData = {
         hostId: options.hostId,
         isPublic: options.isPublic,
@@ -108,7 +105,7 @@ io.on('connection', (socket) => {
       socket.join(gameCode);
   socket.emit('gameCreated', { gameId: gameCode, questions: mappedQuestions, ...gameData });
     } catch (error) {
-  // ...log eliminado...
+
       socket.emit('error', { error: error.message });
     }
   });
@@ -324,6 +321,6 @@ async function sendQuestion(io, gameId, questionIndex) {
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  // ...log eliminado...
+
 });
 

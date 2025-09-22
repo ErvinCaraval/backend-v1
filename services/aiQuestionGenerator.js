@@ -119,7 +119,6 @@ class AIQuestionGenerator {
 
       return { questions: uniqueQuestions.slice(0, count) };
     } catch (error) {
-  // ...log eliminado...
       throw error;
     }
   }
@@ -134,8 +133,7 @@ class AIQuestionGenerator {
     }
   }
 
-  // ...el sistema de preguntas locales ha sido eliminado. Solo se usan preguntas generadas por IA...
-
+ 
   // Llenar template con datos dinámicos
   fillTemplate(template, topic, difficulty) {
     return {

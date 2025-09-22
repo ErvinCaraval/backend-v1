@@ -14,7 +14,7 @@ class AIController {
         return res.status(400).json({ error: 'El tema es requerido' });
       }
 
-      // Solo permitir preguntas IA, nunca plantillas locales
+     
       if (!useAI) {
         return res.status(400).json({ error: 'Debes activar el modo IA para generar preguntas. No se permiten preguntas locales.' });
       }
@@ -32,12 +32,12 @@ class AIController {
         questions: result.questions
       });
     } catch (error) {
-  // ...log eliminado...
+
       res.status(500).json({ error: 'Error interno del servidor' });
     }
   }
 
-  // Obtener temas disponibles
+
   getTopics(req, res) {
     try {
       const topics = this.aiGenerator.getAvailableTopics();
@@ -46,7 +46,7 @@ class AIController {
         topics
       });
     } catch (error) {
-  // ...log eliminado...
+
       res.status(500).json({ error: 'Error interno del servidor' });
     }
   }
@@ -60,7 +60,6 @@ class AIController {
         levels
       });
     } catch (error) {
-  // ...log eliminado...
       res.status(500).json({ error: 'Error interno del servidor' });
     }
   }
@@ -75,9 +74,7 @@ class AIController {
       }
 
       const questions = await this.aiGenerator.generateQuestionsFree(topic, difficulty, count);
-      
-      // Aquí podrías guardar las preguntas en la base de datos
-      // await this.saveQuestionsToGame(gameId, questions.questions);
+
 
       res.json({
         success: true,
@@ -88,7 +85,6 @@ class AIController {
         questions: questions.questions
       });
     } catch (error) {
-  // ...log eliminado...
       res.status(500).json({ error: 'Error interno del servidor' });
     }
   }
