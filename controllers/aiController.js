@@ -13,10 +13,11 @@ class AIController {
       if (!topic) {
         return res.status(400).json({ error: 'El tema es requerido' });
       }
-
-     
       if (!useAI) {
         return res.status(400).json({ error: 'Debes activar el modo IA para generar preguntas. No se permiten preguntas locales.' });
+      }
+      if (!count || typeof count !== 'number' || count < 1) {
+        return res.status(400).json({ error: 'El número de preguntas debe ser mayor que cero.' });
       }
 
       const result = await this.aiGenerator.generateQuestions(topic, difficulty, count);
@@ -32,7 +33,6 @@ class AIController {
         questions: result.questions
       });
     } catch (error) {
-
       res.status(500).json({ error: 'Error interno del servidor' });
     }
   }
