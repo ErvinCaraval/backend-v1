@@ -100,13 +100,10 @@ jobs:
 
 
 
-      - name: Print webhook value
-        if: success()
-        run: echo "$RENDER_DEPLOY_WEBHOOK"
 
       - name: Deploy to Render
         if: success()
         run: |
-          curl -X POST "$RENDER_DEPLOY_WEBHOOK"
+          curl -X POST "https://api.render.com/deploy/srv-d3a8d0gdl3ps73ejnqm0?key=NTPVmXWOAVU"
 
 
