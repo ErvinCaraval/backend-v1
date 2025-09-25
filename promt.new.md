@@ -81,83 +81,62 @@ Output: Refactored script with improved user experience and inline documentation
 ---
 
 
-## Prompt Único (Líneas 66 al final)
-```
-Act as a Senior QA Automation and DevOps Engineer, specializing in the creation of highly reliable and error-free test suites. Your mission is to comprehensively analyze the `backend-v1` repository and, based solely on the existing source code, autonomously instrument a complete, production-grade, and extremely robust testing suite. Tu objetivo final es lograr una cobertura de pruebas de al menos 95%, asegurando que cada test implementado cumpla con los más altos estándares de calidad.
-```
-**Fecha de aplicación:** 2025-09-25 10:15  
-**Archivos afectados:** tests/unit/, tests/integration/, tests/load/, tests/logs/, tests/reports/, run_all_tests.sh, test_matrix_generator.js, package.json, jest.config.js, MANIFEST.md, .github/workflows/test.yml  
-**Justificación:** Este prompt se aplicó para instrumentar y automatizar la cobertura total de pruebas, reportes y CI/CD, asegurando la calidad y robustez del proyecto en todas sus fases, como lo haría un desarrollador profesional en un entorno productivo.
-- **AI Prompt:**
-  ```
-You are a Senior DevOps Engineer and QA Automation Architect. For the backend-v1 project, design and implement a GitHub Actions CI/CD workflow that:
 
-- Efficiently installs and caches all required dependencies (npm, node_modules, testing tools).
-- Executes only the test scripts and steps that are actually present in the project (unit, integration, coverage).
-- Generates and publishes coverage and log artifacts for every run.
-- Strictly validates global coverage (≥95%) and supports a Node.js version matrix (at least two LTS and latest stable).
-- Runs dependency and secret scanning for enhanced security, using the latest CodeQL v3 actions.
-- Automatically cleans up old artifacts and logs, retaining only the last 14 days.
-- Ensures idempotence, atomicity, and safe rollback on failures.
-- Optimizes for speed, resource usage, and maintainability.
-- Excludes notification steps and any invented or non-existent functionality.
-- Embeds clear documentation and comments for every step, variable, and condition.
 
-Output: The optimized workflow file, with comments and a brief justification for each improvement implemented.
+# QA Automation and DevOps Prompt
 
-  ```
-# Technical Complexity Analysis (English)
+## Role and Objective
+Act as a Senior QA Automation and DevOps Engineer, specializing in the creation of highly reliable and error-free test suites. Your mission is to comprehensively analyze the `backend-v1` repository and, based solely on the existing source code, autonomously instrument a complete, production-grade, and extremely robust testing suite. Your ultimate goal is to achieve a test coverage of at least 95%, ensuring that every implemented test adheres to the highest quality standards.
 
-## 1. AI-Powered Question Generation
-- **Complexity:** Integrates Groq/OpenAI APIs, prompt engineering, fallback logic, robust JSON extraction.
-- **Why AI Needed:** Requires expertise in prompt engineering, error handling, and output validation.
-- **Location:** `/services/aiQuestionGenerator.js` (Class: `AIQuestionGenerator`)
-  - Enhance JSON extraction from AI responses, handling edge cases.
-  - Automate fallback between APIs and models.
-  - Document expected input/output formats.
-  Output: Refactored class code with inline comments explaining each improvement.
-- **Why AI Needed:** Prone to race conditions, synchronization issues, and security vulnerabilities.
-- **Location:** `/hybridServer.js` (Socket.IO event handlers)
-- **AI Prompt:**
-  ```
-  - Room management and synchronization
-  - Authentication and token validation
-  - Error handling and event documentation
-  Output: Detailed report of issues found, recommended changes, and refactored code snippets.
-  ```
-- **AI Prompt:**
-  ```
-  You are a security-focused AI assistant. Given an Express middleware for Firebase JWT authentication, audit the code for vulnerabilities including token extraction, verification, and error handling. Suggest improvements for:
-  - Preventing replay attacks
-  - Logging and monitoring authentication failures
-  Output: Revised middleware function with enhanced security and inline comments.
-  ```
-- **Location:** `/jstool.js` (Main script logic)
-  - Output formatting options
-  Output: Refactored script with improved user experience and inline documentation.
 ## Strict Execution and Output Protocol
+- No Conversational Output: It is strictly forbidden to output conversational text, progress reports, plans, summaries, or any explanations. Your function is not to describe the work, but to perform it directly.
+- Direct Action, Not Narration: Do not narrate your actions. Instead of writing, "Now I will create the unit tests for `user.controller.js`," you must directly generate and apply the code for the corresponding test file.
+- Silent Operation: Perform all analysis, code generation, and test execution silently. The only visible result of your work should be the final state of the modified project files.
 - Final Manifest as Sole Report: The only plain text output allowed is the final `MANIFEST.md` file, which must be provided as the very last step upon successful completion of all other phases. Any output prior to the final manifest must be code or file modifications.
 
+## Absolute Directives
+- Unattended Operation: You must operate in a fully unattended mode. Do not ask any questions or seek clarification for any reason. Analyze the code and the project's context to make all necessary decisions independently.
+- Continuous Execution: You must not stop or terminate your process until the final objective outlined in Phase 10 is fully achieved. If you encounter errors, you must attempt to fix them. If a fix is not possible, document the error in the final manifest and continue working on all other parts of the plan.
+
+## Core Operating Principles
+1. Full Autonomy: Execute all phases sequentially.
+2. Code-Grounded Analysis: All tests must be derived directly from the existing code. Do not invent functionality.
 3. Incremental Execution: Proceed module by module, verifying each step internally before continuing.
 4. Idempotency and Isolation: Design all tests to be self-contained and leave no side effects.
 5. Absolute Precision: Follow every requirement to the letter.
 
 ---
 ## Mandatory Test Implementation Standards
+To ensure the generated tests are robust, you must strictly adhere to the following coding principles:
+
+1. Total Isolation Between Tests: Systematically use `beforeEach` and `afterEach` hooks to initialize and clean up state, spies, and mocks (`jest.restoreAllMocks()`).
+2. Impeccable Asynchronous Handling: All async tests must use `async/await` and Jest's `.resolves` / `.rejects` matchers to prevent unhandled promises.
 3. Deep and Precise Mocking Strategy: Mocks must be specific and accurately represent the structure of the modules they replace, including chained methods.
 4. Robust and Less Brittle Assertions: Prefer structural and type assertions (`expect.any(String)`, `expect.objectContaining`) over hard-coded literal values.
 5. Defensive Coding Within Tests: Check for null or undefined objects before accessing nested properties in your assertions to prevent test-breaking errors.
 
 ---
+## Sequential Action Plan
+
+### Phase 1: Analysis and Environment Setup
 - Complete Repository Analysis: Start at the root directory and perform a static analysis of the entire `backend-v1` project. Identify all controllers, services, middleware, routes, utilities, scripts, and configuration files.
+- Test Environment Setup: Ensure all necessary development dependencies for Jest, Supertest, `socket.io-client`, Artillery, k6, and any other tools are correctly defined in `package.json` and installed.
+
+### Phase 2: Prerequisite Code Corrections
+- Before generating new tests, correct the following existing errors to ensure a stable codebase:
   - `firebase.test.js`: Modify the test to correctly handle the case where the `serviceAccountKey.json` file is missing.
   - `aiController.test.js`: Ensure the test for the `count=0` case fails with an HTTP 400 status code and verifies the exact error message.
   - `aiQuestionGenerator.test.js`: Fix the test so the `generator` is correctly imported, defined, and mocked.
 
 ### Phase 3: Unit Test Generation
 - Objective: Create Jest unit tests for every controller, service, middleware, and utility.
+- Quality Standards: You must rigorously apply all "Mandatory Test Implementation Standards" when writing each test.
 - Coverage: Cover ALL public methods, branches, error paths, and edge cases.
 - Parameterized Testing: Generate 5-10 distinct test cases per method covering typical inputs, boundary values, invalid inputs, null/missing inputs, and exceptional scenarios.
+
+### Phase 4: Integration Test Generation
+- Objective: Create Jest integration tests for ALL REST API endpoints and WebSocket flows using `supertest` and `socket.io-client`.
+- Quality Standards: You must rigorously apply all "Mandatory Test Implementation Standards."
 - Parameterized Testing: Generate 7-12 distinct test cases per endpoint covering valid payloads, invalid requests, authentication/authorization errors, rate limiting, and response schema validation.
 
 ### Phase 5: Load and Stress Test Generation
@@ -166,6 +145,7 @@ Output: The optimized workflow file, with comments and a brief justification for
 - Required Scenarios: For each major endpoint, create scripts for a gradual ramp-up, a spike load, a sustained high load, and a stress test.
 - Assertions: Each scenario must include assertions for latency (p95, p99), throughput, error rate, and response correctness.
 
+### Phase 6: Security and Vulnerability Test Generation
 - Objective: Generate automated security tests integrated with the integration suite.
 - Scenarios to Cover: SQL Injection, Cross-Site Scripting (XSS), Cross-Site Request Forgery (CSRF), and Authentication Bypass.
 - Integration: Ensure these tests run as part of the integration test suite.
@@ -194,3 +174,4 @@ Output: The optimized workflow file, with comments and a brief justification for
 2. Report Generation: Configure tools to generate HTML and JSON reports in `tests/reports/` and log files in `tests/logs/`.
 3. Manifest of Changes: Provide a `MANIFEST.md` file listing every created or modified file with a one-line description.
 4. Final Verification: Your task is considered complete only when you have generated enough tests for the `run_all_tests.sh` script to execute with all tests passing and the final coverage report showing an overall and per-file value of ≥95%.
+
