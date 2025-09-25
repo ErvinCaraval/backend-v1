@@ -1,7 +1,7 @@
+
+
 const AIController = require('../../controllers/aiController');
 const AIQuestionGenerator = require('../../services/aiQuestionGenerator');
-
-jest.mock('../../services/aiQuestionGenerator');
 
 describe('AIController', () => {
   let req, res, controller;
@@ -31,6 +31,13 @@ describe('AIController', () => {
       expect(res.status).toHaveBeenCalledWith(400);
       expect(res.json).toHaveBeenCalledWith(expect.objectContaining({ error: expect.any(String) }));
     });
+
+      test('should return 400 if count is 0 and verify error message', async () => {
+        req.body = { topic: 'math', useAI: true, count: 0 };
+        await controller.generateQuestions(req, res);
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({ error: 'El número de preguntas debe ser mayor que cero.' });
+      });
 
     test('should return 500 if not enough questions', async () => {
       req.body = { topic: 'math', useAI: true, count: 5 };

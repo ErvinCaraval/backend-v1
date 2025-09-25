@@ -1,6 +1,7 @@
-const AIQuestionGenerator = require('../../services/aiQuestionGenerator');
-const axios = require('axios');
+
 jest.mock('axios');
+const axios = require('axios');
+const AIQuestionGenerator = require('../../services/aiQuestionGenerator');
 
 describe('AIQuestionGenerator', () => {
   let generator;
