@@ -6,16 +6,16 @@
   ```
 You are a Senior DevOps Engineer and QA Automation Architect. For the backend-v1 project, design and implement a GitHub Actions CI/CD workflow that:
 
-- Installs and caches all required dependencies (npm, node_modules, testing tools) efficiently.
-- Executes unit and integration tests, and generates coverage reports (HTML/JSON) for every run.
-- Strictly validates global coverage (≥95%) and publishes coverage and log artifacts.
-- Supports a Node.js version matrix (at least two LTS and latest stable).
-- Runs dependency and secret scanning for enhanced security.
+- Efficiently installs and caches all required dependencies (npm, node_modules, testing tools).
+- Executes only the test scripts and steps that are actually present in the project (unit, integration, coverage).
+- Generates and publishes coverage and log artifacts for every run.
+- Strictly validates global coverage (≥95%) and supports a Node.js version matrix (at least two LTS and latest stable).
+- Runs dependency and secret scanning for enhanced security, using the latest CodeQL v3 actions.
 - Automatically cleans up old artifacts and logs, retaining only the last 14 days.
-- Embeds clear documentation and comments for every step, variable, and condition.
 - Ensures idempotence, atomicity, and safe rollback on failures.
 - Optimizes for speed, resource usage, and maintainability.
-- Only includes steps and scripts that are actually present in the project; do not invent or assume functionality.
+- Excludes notification steps and any invented or non-existent functionality.
+- Embeds clear documentation and comments for every step, variable, and condition.
 
 Output: The optimized workflow file, with comments and a brief justification for each improvement implemented.
 
