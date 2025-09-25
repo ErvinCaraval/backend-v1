@@ -21,10 +21,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install jstool globally
+      - name: Install and link lodash-cli
         run: |
-          chmod +x jstool.js
-          sudo mv jstool.js /usr/local/bin/jstool
+          npm install --save-dev lodash-cli
+          sudo ln -s $(npm bin)/lodash /usr/local/bin/lodash
 
       - name: Run all tests
         run: |
