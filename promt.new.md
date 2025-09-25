@@ -4,21 +4,21 @@
 - **Location:** `.github/workflows/test.yml` (CI/CD workflow)
 - **AI Prompt:**
   ```
-  You are a Senior DevOps Engineer and QA Automation Architect. Given the backend-v1 project, design and implement a GitHub Actions CI/CD workflow that achieves:
-  - Intelligent installation and caching of dependencies (npm, node_modules, testing/linting tools).
-  - Parallel execution of linters, unit, integration, security, and load tests, with detailed reporting.
-  - Automatic generation, validation, and publication of coverage reports (HTML/JSON), logs, and artifacts for every run.
-  - Strict validation of global and per-file coverage (≥95%), with automatic warnings and failures if not met.
-  - Support for Node.js version matrices (at least 2 LTS and latest stable).
-  - Automatic notifications to Slack, email, or Discord on failures, warnings, or low coverage.
-  - Execution of chaos and resilience simulation scripts, with reporting of results.
-  - Automatic cleanup and rotation of old artifacts and logs.
-  - Enhanced security: dependency scanning, secret management, and protection against common attacks.
-  - Embedded documentation and comments for every step, variable, and condition.
-  - Idempotence, atomicity, and safe rollback on failures.
-  - Optimization for speed, resource usage, and maintainability.
+You are a Senior DevOps Engineer and QA Automation Architect. For the backend-v1 project, design and implement a GitHub Actions CI/CD workflow that:
 
-  Output: The optimized workflow file, with comments and a brief justification for each improvement implemented.
+- Installs and caches all required dependencies (npm, node_modules, testing tools) efficiently.
+- Executes unit and integration tests, and generates coverage reports (HTML/JSON) for every run.
+- Strictly validates global coverage (≥95%) and publishes coverage and log artifacts.
+- Supports a Node.js version matrix (at least two LTS and latest stable).
+- Runs dependency and secret scanning for enhanced security.
+- Automatically cleans up old artifacts and logs, retaining only the last 14 days.
+- Embeds clear documentation and comments for every step, variable, and condition.
+- Ensures idempotence, atomicity, and safe rollback on failures.
+- Optimizes for speed, resource usage, and maintainability.
+- Only includes steps and scripts that are actually present in the project; do not invent or assume functionality.
+
+Output: The optimized workflow file, with comments and a brief justification for each improvement implemented.
+
   ```
 # Technical Complexity Analysis (English)
 

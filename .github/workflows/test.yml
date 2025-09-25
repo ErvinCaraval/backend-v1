@@ -75,8 +75,9 @@ jobs:
       # Ejemplo: para pruebas de carga y caos, asegúrate de tener los scripts o elimínalos
 
 
-      # Dependency scanning
+      # Dependency scanning solo en pull_request
       - name: Run dependency security scan
+        if: github.event_name == 'pull_request'
         uses: actions/dependency-review-action@v4
 
       # Secret scanning
