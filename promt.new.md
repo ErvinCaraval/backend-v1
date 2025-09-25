@@ -1,3 +1,29 @@
+# Academic Report: AI Usage in backend-v1 Project
+
+**Author:** Ervin Caravali Ibarra  
+**Student Code:** 1925648  
+**Institution:** Universidad del Valle  
+**Course:** Software Engineering / DevOps  
+**Period:** September 20–25, 2025
+
+---
+## Table of Contents
+1. Introduction
+2. AI Usage Log
+3. Prompts Used (Full Text)
+4. Conclusions
+
+---
+## 1. Introduction
+This report documents the use of Artificial Intelligence (AI) tools and prompts in the development and automation of the backend-v1 project. It details the objectives, actions, and results of each intervention, ensuring transparency and reproducibility.
+
+---
+## 2. AI Usage Log
+A summary of all moments where AI was used to assist, generate, or optimize code, workflows, and documentation in the project.
+
+---
+## 3. Prompts Used (Full Text)
+
 ## 2. Advanced CI/CD Workflow Engineering
 - **Complexity:** Requires deep knowledge of DevOps, automation, security, reporting, and multi-environment orchestration.
 - **Why AI Needed:** To design and implement a workflow that is robust, fast, secure, and maintainable, covering all quality and operational requirements for backend-v1.
@@ -134,3 +160,7 @@ Act as a Senior QA Automation and DevOps Engineer, specializing in the creation 
 2. Report Generation: Configure tools to generate HTML and JSON reports in `tests/reports/` and log files in `tests/logs/`.
 3. Manifest of Changes: Provide a `MANIFEST.md` file listing every created or modified file with a one-line description.
 4. Final Verification: Your task is considered complete only when you have generated enough tests for the `run_all_tests.sh` script to execute with all tests passing and the final coverage report showing an overall and per-file value of ≥95%.
+
+---
+## 4. Conclusions
+The use of AI in backend-v1 enabled rapid, robust, and secure automation of testing, deployment, and code quality processes. All interventions were documented, reproducible, and aligned with academic and professional standards.
