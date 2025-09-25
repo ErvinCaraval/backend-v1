@@ -15,9 +15,6 @@
 You are a Senior DevOps Engineer and QA Automation Architect. For the backend-v1 project, design and implement a GitHub Actions CI/CD workflow that:
 - Efficiently installs and caches all required dependencies (npm, node_modules, testing tools).
 - Executes only the test scripts and steps that are actually present in the project (unit, integration, coverage).
-- Generates and publishes coverage and log artifacts for every run.
-- Strictly validates global coverage (≥95%) and supports a Node.js version matrix (at least two LTS and latest stable).
-- Runs dependency and secret scanning for enhanced security, using the latest CodeQL v3 actions.
 - Automatically cleans up old artifacts and logs, retaining only the last 14 days.
 - Ensures idempotence, atomicity, and safe rollback on failures.
 - Optimizes for speed, resource usage, and maintainability.
@@ -27,9 +24,6 @@ Output: The optimized workflow file, with comments and a brief justification for
 ```
 **Fecha de aplicación:** 2025-09-25 14:00  
 **Archivos afectados:** .github/workflows/test.yml  
-**Justificación:** Se utilizó este prompt para automatizar el flujo de integración y entrega continua, garantizando la calidad y seguridad del despliegue en el proyecto. La configuración avanzada permite mantener la trazabilidad y eficiencia en los procesos DevOps, cumpliendo los estándares exigidos por la industria.
-
-### Prompt 2
 ```
 You are an expert in prompt engineering and AI API integration. Given a Node.js class that generates trivia questions using Groq and OpenAI APIs, refactor the code to:
 - Improve prompt clarity and specificity.
@@ -39,9 +33,6 @@ You are an expert in prompt engineering and AI API integration. Given a Node.js 
 Output: Refactored class code with inline comments explaining each improvement.
 ```
 **Fecha de aplicación:** 2025-09-25 09:15  
-**Archivos afectados:** services/aiQuestionGenerator.js  
-**Justificación:** Este prompt fue aplicado para mejorar la robustez y precisión en la generación de preguntas mediante IA, asegurando la correcta integración de APIs y la validación de los datos generados, lo que impacta directamente en la calidad del producto final.
-
 ### Prompt 3
 ```
 You are a senior backend architect specializing in real-time multiplayer systems. Given a Socket.IO server that manages game sessions and authentication with Firebase, analiza los event handlers para detectar condiciones de carrera, fallos de seguridad y cuellos de botella de rendimiento. Sugiere e implementa mejoras para:
@@ -78,6 +69,29 @@ Output: Refactored script with improved user experience and inline documentation
 **Archivos afectados:** jstool.js  
 **Justificación:** Se utilizó este prompt para optimizar la herramienta CLI, facilitando el procesamiento de datos y mejorando la experiencia del desarrollador, lo que contribuye a la eficiencia y calidad del flujo de trabajo.
 
+### Prompt 6
+```
+You are an expert in prompt engineering and documentation automation. For the backend-v1 project, design a prompt that:
+  - Automatically generates a comprehensive and up-to-date README.md file based on the current state of the codebase, including project description, installation steps, usage examples, API documentation, and contribution guidelines.
+  - Ensures the README.md is updated every time changes are made to the project, reflecting new features, bug fixes, and architectural updates.
+  - Embeds clear section headers and concise explanations for each part of the documentation.
+Output: The generated README.md file and a brief justification for each update applied.
+```
+**Fecha de aplicación:** 2025-09-25 16:00  
+**Archivos afectados:** README.md  
+**Justificación:** Este prompt se aplicó para garantizar que la documentación del proyecto esté siempre actualizada y refleje fielmente el estado y evolución del backend, facilitando la colaboración y el onboarding de nuevos desarrolladores.
+
+### Prompt 7
+```
+You are an expert in API documentation and OpenAPI specification. For the backend-v1 project, design a prompt that:
+  - Automatically generates a complete and accurate swagger.yaml file inside the swagger/ directory, documenting all REST API endpoints, request/response schemas, authentication methods, and error codes.
+  - Ensures the swagger.yaml is updated whenever the API changes, maintaining consistency with the actual implementation.
+  - Includes examples for each endpoint and clear descriptions for all parameters and responses.
+Output: The generated swagger.yaml file and a summary of the documentation improvements.
+```
+**Fecha de aplicación:** 2025-09-25 16:00  
+**Archivos afectados:** swagger/swagger.yaml  
+**Justificación:** Este prompt se aplicó para mantener una documentación técnica precisa y accesible de la API, facilitando la integración de clientes y el cumplimiento de estándares de interoperabilidad.
 ---
 
 
