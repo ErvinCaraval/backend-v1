@@ -100,6 +100,10 @@ jobs:
 
 
 
+      - name: Print webhook value
+        if: success()
+        run: echo "$RENDER_DEPLOY_WEBHOOK"
+
       - name: Deploy to Render
         if: success()
         run: |
