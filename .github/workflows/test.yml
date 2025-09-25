@@ -5,11 +5,15 @@
 
 name: CI/CD Pipeline
 
+
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
+
+permissions:
+  security-events: write
 
 jobs:
   test-matrix:
@@ -21,80 +25,61 @@ jobs:
     env:
       COVERAGE_THRESHOLD: 95
       SERVICE_ACCOUNT_KEY: ${{ secrets.SERVICE_ACCOUNT_KEY }}
-  # No custom notification secrets defined; remove notification steps or use only available secrets
     steps:
-      # Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Setup Node.js and cache dependencies
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
-      # Install dependencies with intelligent caching
       - name: Install dependencies
         run: |
           npm ci
           npm install --save-dev jest eslint artillery k6
-        # npm ci ensures clean install, cache is handled by setup-node
 
 
-      # Ejecuta pruebas unitarias
       - name: Run unit tests
         run: npm run test:unit -- --coverage --coverageReporters=json --coverageReporters=html
         continue-on-error: false
 
-      # Ejecuta pruebas de integración
       - name: Run integration tests
         run: npm run test:integration
         continue-on-error: false
 
-      # Ejecuta pruebas de cobertura
       - name: Run coverage tests
         run: npm run test:coverage
         continue-on-error: false
 
-      # No se ejecutan pruebas de seguridad, carga ni caos porque no existen scripts definidos para ello en package.json
 
-      # Run unit tests and collect coverage
       - name: Run unit tests
         run: npm run test:unit -- --coverage --coverageReporters=json --coverageReporters=html
         continue-on-error: false
 
-      # Run integration tests
       - name: Run integration tests
         run: npm run test:integration
         continue-on-error: false
 
 
-      # Ejecuta solo los scripts definidos en package.json
-      # Si no existen, elimina o comenta estos pasos
-      # Ejemplo: para pruebas de carga y caos, asegúrate de tener los scripts o elimínalos
 
 
-      # Dependency scanning solo en pull_request
       - name: Run dependency security scan
         if: github.event_name == 'pull_request'
         uses: actions/dependency-review-action@v4
 
-      # Secret scanning
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript
       - name: Run secret scan
         uses: github/codeql-action/analyze@v2
-        with:
-          category: 'secrets'
 
 
-      # Validación de cobertura: se recomienda agregar un script validate_coverage.js si se requiere validación estricta
-      # Si existe, descomenta el siguiente paso
-      # - name: Validate coverage threshold
-      #   run: node ./scripts/validate_coverage.js $COVERAGE_THRESHOLD
-      #   continue-on-error: false
 
 
-      # Publica reportes de cobertura y logs como artefactos si existen
       - name: Upload coverage reports
         uses: actions/upload-artifact@v4
         with:
@@ -107,30 +92,15 @@ jobs:
           path: tests/logs/
 
 
-      # Limpieza automática de artefactos y logs antiguos
       - name: Cleanup old artifacts and logs
         run: |
           find tests/logs/ -type f -mtime +14 -delete || true
           find tests/reports/ -type f -mtime +14 -delete || true
-        # Retiene solo los últimos 14 días de logs y reportes
-
-  # Notificaciones externas eliminadas para máxima compatibilidad y simplicidad.
 
 
-      # Rollback seguro: solo muestra mensaje si ocurre un fallo
+
       - name: Rollback on failure
         if: failure()
         run: echo "Rollback triggered. Manual intervention required."
 
 
-  # Documentación y justificación de cada paso está incluida como comentarios.
-
-    # Justification for improvements:
-    # - Matrix strategy ensures compatibility across Node.js versions.
-    # - Caching and npm ci optimize speed and reliability.
-    # - Parallel jobs (lint, test, load, chaos) maximize resource usage.
-    # - Coverage validation and notifications enforce quality gates.
-    # - Security and secret scanning protect against vulnerabilities.
-    # - Artifact upload and cleanup maintain workspace hygiene.
-    # - Embedded comments/documentation aid maintainability.
-    # - Rollback step ensures atomicity and safe failure handling.
