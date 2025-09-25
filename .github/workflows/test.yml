@@ -1,7 +1,7 @@
 
 # GitHub Actions CI/CD Workflow for backend-v1
 # This workflow is designed for robust, secure, and maintainable automation.
-# Each step is documented for clarity and maintainability.
+# Each step is documented for clarity and maintainability
 
 name: CI/CD Pipeline
 
