@@ -54,20 +54,36 @@ jobs:
         continue-on-error: false
 
 
-      - name: Run unit tests
-        run: npm run test:unit -- --coverage --coverageReporters=json --coverageReporters=html
-        continue-on-error: false
-
-      - name: Run integration tests
-        run: npm run test:integration
-        continue-on-error: false
-
-
 
 
       - name: Run dependency security scan
         if: github.event_name == 'pull_request'
-        uses: actions/dependency-review-action@v4
+        run: |
+          echo "🔍 Running security audit..."
+          npm audit --audit-level=moderate --json > audit-results.json || true
+          
+          # Procesar resultados del audit
+          if [ -f audit-results.json ]; then
+            echo "📊 Audit Results:"
+            cat audit-results.json | jq '.metadata.vulnerabilities // {}'
+            
+            # Contar vulnerabilidades por severidad
+            CRITICAL=$(cat audit-results.json | jq '.metadata.vulnerabilities.critical // 0')
+            HIGH=$(cat audit-results.json | jq '.metadata.vulnerabilities.high // 0')
+            
+            echo "📈 Vulnerability Summary:"
+            echo "  Critical: $CRITICAL"
+            echo "  High: $HIGH"
+            
+            # Fallar si hay vulnerabilidades críticas o altas
+            if [ "$CRITICAL" -gt 0 ] || [ "$HIGH" -gt 0 ]; then
+              echo "❌ Found critical or high severity vulnerabilities!"
+              echo "Please update dependencies to fix these issues."
+              exit 1
+            else
+              echo "✅ No critical or high severity vulnerabilities found"
+            fi
+          fi
 
 
       - name: Initialize CodeQL

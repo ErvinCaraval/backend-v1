@@ -94,12 +94,13 @@ io.on('connection', (socket) => {
         hostId: options.hostId,
         isPublic: options.isPublic,
         status: 'waiting',
-        players: [{ uid: options.hostId, displayName: options.displayName, score: 0 }],
+        players: [{ uid: options.hostId, displayName: options.displayName, score: 0, responseTimes: [] }],
         questions: mappedQuestions,
         currentQuestion: 0,
         topic: options.topic || '',
         difficulty: options.difficulty || 'medium',
-        createdAt: Date.now()
+        createdAt: Date.now(),
+        questionStartTimes: {} // Para almacenar cuándo se envió cada pregunta
       };
       await db.collection('games').doc(gameCode).set(gameData);
       socket.join(gameCode);
@@ -126,7 +127,7 @@ io.on('connection', (socket) => {
       }
       const alreadyJoined = game.players.some(p => p.uid === uid);
       if (!alreadyJoined) {
-        game.players.push({ uid, displayName, score: 0 });
+        game.players.push({ uid, displayName, score: 0, responseTimes: [] });
         await gameRef.update({ players: game.players });
       }
       socket.join(gameId);
@@ -181,8 +182,10 @@ io.on('connection', (socket) => {
         return;
       }
       if (!socket.data.answers) socket.data.answers = {};
-      // Guardar ambos: índice y valor
-      socket.data.answers[game.currentQuestion] = { answerIndex, answerValue };
+      // Capturar el tiempo de respuesta
+      const responseTime = Date.now();
+      // Guardar ambos: índice, valor y tiempo de respuesta
+      socket.data.answers[game.currentQuestion] = { answerIndex, answerValue, responseTime };
       socket.data.uid = uid;
       const sockets = await io.in(gameId).fetchSockets();
       const answers = {};
@@ -196,9 +199,23 @@ io.on('connection', (socket) => {
         const correctValue = Array.isArray(currentQ.options) && typeof currentQ.correctAnswerIndex === 'number'
           ? currentQ.options[currentQ.correctAnswerIndex]
           : undefined;
+        
+        // Obtener el tiempo de inicio de la pregunta actual
+        const questionStartTime = game.questionStartTimes && game.questionStartTimes[game.currentQuestion] 
+          ? game.questionStartTimes[game.currentQuestion] 
+          : Date.now();
+        
         const updatedPlayers = game.players.map(player => {
           const ansObj = answers[player.uid];
           let score = player.score;
+          let responseTimes = player.responseTimes || [];
+          
+          // Calcular el tiempo de respuesta para esta pregunta
+          if (ansObj && ansObj.responseTime) {
+            const responseTimeMs = ansObj.responseTime - questionStartTime;
+            responseTimes.push(responseTimeMs);
+          }
+          
           // Validar por valor, y si no hay valor, por índice
           if (ansObj) {
             if (
@@ -215,7 +232,7 @@ io.on('connection', (socket) => {
               score += 1;
             }
           }
-          return { ...player, score };
+          return { ...player, score, responseTimes };
         });
         await gameRef.update({ players: updatedPlayers });
         io.to(gameId).emit('answerResult', {
@@ -240,10 +257,38 @@ io.on('connection', (socket) => {
             const questionsCount = Array.isArray(finalGame.questions) ? finalGame.questions.length : 0;
             // Determinar el score más alto
             const maxScore = Math.max(...players.map(p => p.score));
+            const playersWithMaxScore = players.filter(p => p.score === maxScore);
+            
+            // Función para calcular tiempo promedio de respuesta
+            const calculateAverageResponseTime = (responseTimes) => {
+              if (!responseTimes || responseTimes.length === 0) return Infinity;
+              return responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length;
+            };
+            
+            // Determinar ganador considerando empates por tiempo
+            let winnerUid = null;
+            if (playersWithMaxScore.length === 1) {
+              // Solo un jugador con score máximo
+              winnerUid = playersWithMaxScore[0].uid;
+            } else if (playersWithMaxScore.length > 1 && maxScore > 0) {
+              // Múltiples jugadores con score máximo - desempate por tiempo promedio
+              let fastestPlayer = playersWithMaxScore[0];
+              let fastestTime = calculateAverageResponseTime(fastestPlayer.responseTimes);
+              
+              for (let i = 1; i < playersWithMaxScore.length; i++) {
+                const currentTime = calculateAverageResponseTime(playersWithMaxScore[i].responseTimes);
+                if (currentTime < fastestTime) {
+                  fastestTime = currentTime;
+                  fastestPlayer = playersWithMaxScore[i];
+                }
+              }
+              winnerUid = fastestPlayer.uid;
+            }
+            
             for (const player of players) {
-              const result = player.score === maxScore && maxScore > 0
+              const result = player.uid === winnerUid && maxScore > 0
                 ? 'win'
-                : (players.filter(p => p.score === maxScore).length > 1 ? 'draw' : 'lose');
+                : 'lose';
               // Determinar si el jugador fue host
               const isHost = finalGame.hostId === player.uid;
               await db.collection('gameResults').add({
@@ -302,6 +347,13 @@ async function sendQuestion(io, gameId, questionIndex) {
     await gameRef.update({ status: 'finished' });
     return;
   }
+  
+  // Capturar el timestamp cuando se envía la pregunta
+  const questionStartTime = Date.now();
+  const questionStartTimes = game.questionStartTimes || {};
+  questionStartTimes[questionIndex] = questionStartTime;
+  await gameRef.update({ questionStartTimes });
+  
   let question = game.questions[questionIndex];
   // Solo adaptar el campo 'question' si viene como 'text', pero JAMÁS modificar options ni correctAnswerIndex
   if (question) {
