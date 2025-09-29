@@ -13,3 +13,29 @@ exports.listPublicGames = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+// Delete a public game by its creator
+exports.deletePublicGame = async (req, res) => {
+  const { gameId } = req.params;
+  const userId = req.user.id; // Assuming req.user contains authenticated user info
+
+  try {
+    const gameRef = db.collection('games').doc(gameId);
+    const gameDoc = await gameRef.get();
+
+    if (!gameDoc.exists) {
+      return res.status(404).json({ error: 'Game not found' });
+    }
+
+    const gameData = gameDoc.data();
+
+    if (gameData.createdBy !== userId) {
+      return res.status(403).json({ error: 'You are not authorized to delete this game' });
+    }
+
+    await gameRef.delete();
+    res.json({ message: 'Game deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
