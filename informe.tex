@@ -1,0 +1,385 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+% Configuración de página
+\geometry{margin=2.5cm}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Universidad del Valle}
+\fancyhead[R]{Escuela de Ingeniería de Sistemas y Computación}
+\fancyfoot[C]{\thepage}
+
+% Configuración de código
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!10},
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red}
+}
+
+% Configuración de títulos
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+
+\title{\textbf{Desarrollo de Software Asistido por Inteligencia Artificial:\\
+Implementación de Sistema de Desempate en Juego Multijugador}}
+\author{Ervin Caravali Ibarra\\
+Código: 1925648\\
+Universidad del Valle\\
+Escuela de Ingeniería de Sistemas y Computación}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Introducción}
+
+El desarrollo de software moderno ha experimentado una transformación significativa con la integración de herramientas de Inteligencia Artificial (IA) como asistentes de programación. Este informe documenta la implementación de un sistema de desempate por tiempo en un juego multijugador de trivia, desarrollado mediante la colaboración entre un estudiante de ingeniería y un sistema de IA (Cursor).
+
+El proyecto BrainBlitz Backend constituye una aplicación de tiempo real construida con Node.js, Express, Socket.io y Firebase, diseñada para gestionar partidas multijugador de preguntas y respuestas. La implementación de un sistema de desempate se convirtió en una necesidad crítica cuando múltiples jugadores alcanzaban la misma puntuación máxima, requiriendo un criterio adicional para determinar al ganador.
+
+La importancia de este proyecto radica en demostrar cómo la IA puede servir como un colaborador efectivo en el desarrollo de software, proporcionando soluciones técnicas robustas mientras mantiene la creatividad y el juicio humano en la toma de decisiones arquitectónicas.
+
+\section{Metodología}
+
+La metodología empleada en este proyecto se basó en la ingeniería de prompts (prompt engineering), una disciplina emergente que se enfoca en la formulación precisa de instrucciones para sistemas de IA. Los prompts fueron diseñados siguiendo principios estructurados que incluyen contexto, instrucción, restricciones y ejemplos cuando fue apropiado.
+
+Una decisión metodológica clave fue la utilización del idioma inglés para todos los prompts dirigidos a la IA. Esta elección se fundamenta en evidencia empírica que demuestra que los modelos de IA logran una mejor comprensión, precisión y consistencia cuando las instrucciones están en inglés, dado que la mayoría de estos modelos han sido entrenados principalmente en corpus de texto técnico en este idioma.
+
+El proceso de desarrollo siguió un enfoque iterativo donde:
+\begin{enumerate}
+    \item El estudiante identificaba problemas específicos o funcionalidades requeridas
+    \item Se formulaban prompts estructurados en inglés
+    \item La IA generaba código y soluciones técnicas
+    \item El estudiante revisaba, validaba y refinaba las implementaciones
+    \item Se documentaba el proceso y los resultados obtenidos
+\end{enumerate}
+
+\section{Desarrollo}
+
+\subsection{Tareas Realizadas por el Estudiante}
+
+El estudiante Ervin Caravali Ibarra asumió el rol de arquitecto de software y coordinador del proyecto, realizando las siguientes actividades principales:
+
+\begin{itemize}
+    \item \textbf{Análisis de Requerimientos}: Identificación de la necesidad de implementar un sistema de desempate cuando múltiples jugadores alcanzaban la misma puntuación máxima en el juego.
+    
+    \item \textbf{Diseño de Solución}: Conceptualización del sistema de desempate basado en tiempo promedio de respuesta, donde el jugador con menor tiempo promedio gana en caso de empate en puntuación.
+    
+    \item \textbf{Formulación de Prompts}: Creación de instrucciones estructuradas para guiar a la IA en la implementación técnica de la solución.
+    
+    \item \textbf{Validación y Testing}: Verificación de que la implementación no rompiera funcionalidades existentes y cumpliera con los requerimientos especificados.
+    
+    \item \textbf{Resolución de Problemas}: Identificación y solución de errores en workflows de GitHub Actions, específicamente el problema con \texttt{dependency-review-action}.
+\end{itemize}
+
+\subsection{Tareas Realizadas por la IA}
+
+La IA (Cursor) ejecutó las siguientes tareas técnicas basándose en los prompts proporcionados:
+
+\begin{itemize}
+    \item \textbf{Análisis de Código}: Revisión del archivo \texttt{hybridServer.js} para entender la estructura actual del sistema de puntuación y determinación de ganadores.
+    
+    \item \textbf{Implementación de Captura de Tiempos}: Modificación del sistema para capturar timestamps cuando se envían preguntas y cuando cada jugador responde.
+    
+    \item \textbf{Desarrollo de Lógica de Desempate}: Implementación del algoritmo para calcular tiempo promedio de respuesta y determinar ganadores en caso de empate.
+    
+    \item \textbf{Modificación de Estructuras de Datos}: Actualización de los objetos de juego y jugadores para incluir campos de tiempo de respuesta.
+    
+    \item \textbf{Corrección de Workflows}: Solución del error de GitHub Actions reemplazando \texttt{dependency-review-action} con \texttt{npm audit}.
+\end{itemize}
+
+\section{Documentación de Prompts}
+
+A continuación se documentan los prompts utilizados en el proyecto, siguiendo el formato de ingeniería de prompts:
+
+\subsection{Prompt Generador de Historias de Usuario}
+
+\textbf{Texto del prompt en inglés:}
+\begin{lstlisting}[language=bash]
+You are an expert project manager and software architect specializing in user story creation and project organization. Given a software project context, generate comprehensive GitHub issues that follow best practices for development workflow.
+
+Context: Backend de juego multijugador de trivia con Node.js, Express, Socket.io, Firebase. Sistema actualmente funcional con partidas en tiempo real, autenticación JWT, y generación de preguntas con IA.
+
+Task: Create a structured set of GitHub issues that cover:
+1. Core functionality implementation (user registration, authentication, game management)
+2. Testing and quality assurance (unit tests, integration tests, coverage)
+3. Documentation and maintenance (API documentation, code comments)
+4. Performance and optimization (database queries, caching)
+5. Security and compliance (JWT validation, input sanitization)
+
+Requirements for each issue:
+- Clear, actionable title following "HU[number]. [Description]" format
+- Detailed description with user story format: "Como [user type], quiero [functionality] para [benefit]"
+- Acceptance criteria with specific, testable conditions
+- Appropriate labels for categorization and priority (user-story, status:done/pending, priority:high/medium/low, backend)
+- Estimated complexity/effort level
+- Dependencies on other issues (if any)
+
+Output Format: For each issue, provide:
+- Número: Sequential number starting from 1
+- Título: Clear description of the functionality
+- Estado: closed (for implemented features) or pending (for testing)
+- Autor: ErvinCaraval
+- Asignados: ErvinCaraval (for implementation issues)
+- Etiquetas: user-story, status:done/pending, priority:high/medium/low, backend
+- Milestone: (empty)
+- Comentarios: 0 or 1 (if there are comments)
+- Creado en: Timestamp in ISO format
+- Actualizado en: Timestamp in ISO format  
+- Cerrado en: Timestamp in ISO format (if closed)
+- Descripción: Full user story with acceptance criteria
+
+Focus Areas:
+- Prioritize issues that directly impact user experience
+- Include both feature development and testing phases
+- Ensure issues are atomic and independently completable
+- Consider the project's current architecture and constraints
+- Balance immediate needs with long-term maintainability
+
+Generate 36 issues that would form a comprehensive development roadmap covering all aspects of the trivia game backend system.
+\end{lstlisting}
+
+
+\textbf{Análisis del prompt:}
+\begin{itemize}
+    \item \textbf{Contexto}: Definición clara del proyecto BrainBlitz Backend con su stack tecnológico y funcionalidades existentes.
+    \item \textbf{Instrucción}: Crear un conjunto estructurado de 36 issues de GitHub que cubran todas las áreas del desarrollo del proyecto.
+    \item \textbf{Restricciones}: Formato específico de salida con campos estructurados, uso de etiquetas consistentes, y enfoque en historias de usuario.
+    \item \textbf{Archivos afectados}: Sistema de gestión de issues de GitHub, documentación del proyecto.
+    \item \textbf{Funcionalidades implementadas}: 36 historias de usuario organizadas sistemáticamente, desde HU1 (registro de usuario) hasta HU36 (pruebas de generación IA), incluyendo la issue #37 (sistema de desempate).
+\end{itemize}
+
+\textbf{Justificación de la Importancia:}
+
+Este prompt es fundamental para el proyecto porque:
+
+\textbf{Organización Sistemática}: Proporcionó un framework estructurado para organizar todo el desarrollo del proyecto en 36 historias de usuario claramente definidas, desde funcionalidades core hasta testing completo.
+
+\textbf{Trazabilidad del Desarrollo}: Cada funcionalidad implementada quedó documentada como una issue específica con criterios de aceptación claros, permitiendo rastrear el progreso y asegurar la completitud del desarrollo.
+
+\textbf{Metodología Ágil}: Las historias de usuario siguieron el formato estándar "Como [usuario], quiero [funcionalidad] para [beneficio]", facilitando la comprensión del valor de negocio de cada implementación.
+
+\textbf{Gestión de Prioridades}: El sistema de etiquetado permitió priorizar funcionalidades críticas (priority:high) como autenticación y partidas multijugador, mientras que las tareas de testing se marcaron como pending para fases posteriores.
+
+\textbf{Colaboración Humano-IA}: Las issues sirvieron como puntos de referencia claros para la colaboración entre el estudiante y la IA, definiendo objetivos específicos y criterios de aceptación para cada implementación.
+
+\textbf{Documentación Viva}: Las 36 issues proporcionaron documentación completa del proyecto, describiendo no solo qué se implementó, sino también por qué y cómo se realizó cada funcionalidad.
+
+\subsubsection{Issues Generadas por el Prompt}
+
+El prompt generó exitosamente 37 issues (HU1-HU36 + Issue #37) que cubrieron todo el ciclo de desarrollo del proyecto:
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{|c|l|c|c|c|}
+\hline
+\textbf{Número} & \textbf{Título} & \textbf{Estado} & \textbf{Prioridad} & \textbf{Tipo} \\
+\hline
+HU1 & Registro de usuario & closed & high & user-story \\
+HU2 & Recuperación de contraseña & closed & medium & user-story \\
+HU3 & Consulta de estadísticas personales & closed & high & user-story \\
+HU4 & Listar partidas públicas & closed & high & user-story \\
+HU5 & Crear partida multijugador & closed & high & user-story \\
+HU6 & Unirse a partida existente & closed & high & user-story \\
+HU7 & Iniciar partida & closed & high & user-story \\
+HU8 & Responder preguntas en tiempo real & closed & high & user-story \\
+HU9 & Ver resultados y estadísticas & closed & high & user-story \\
+HU10 & Listar todas las preguntas & closed & medium & user-story \\
+HU11 & Crear una nueva pregunta manualmente & closed & medium & user-story \\
+HU12 & Crear varias preguntas en lote & closed & low & user-story \\
+HU13 & Actualizar una pregunta existente & closed & low & user-story \\
+HU14 & Eliminar una pregunta & closed & low & user-story \\
+HU15 & Generar preguntas de trivia con IA & closed & high & user-story \\
+HU16 & Consultar temas disponibles para IA & closed & medium & user-story \\
+HU17 & Consultar niveles de dificultad & closed & medium & user-story \\
+HU18 & Generar preguntas para un juego específico & closed & medium & user-story \\
+HU19 & Crear pruebas para el registro de usuario & closed & high & testing \\
+HU20 & Crear pruebas para recuperación de contraseña & closed & medium & testing \\
+HU21 & Crear pruebas para estadísticas personales & closed & medium & testing \\
+HU22 & Crear pruebas para listado de partidas & closed & medium & testing \\
+HU23 & Crear pruebas para creación de partidas & closed & high & testing \\
+HU24 & Crear pruebas para unirse a partidas & closed & high & testing \\
+HU25 & Crear pruebas para inicio de partida & closed & high & testing \\
+HU26 & Crear pruebas para responder preguntas & closed & high & testing \\
+HU27 & Crear pruebas para resultados finales & closed & high & testing \\
+HU28 & Crear pruebas para listado de preguntas & closed & medium & testing \\
+HU29 & Crear pruebas para creación manual & closed & medium & testing \\
+HU30 & Crear pruebas para creación masiva & closed & low & testing \\
+HU31 & Crear pruebas para actualización & closed & low & testing \\
+HU32 & Crear pruebas para eliminación & closed & low & testing \\
+HU33 & Crear pruebas para generación IA & closed & high & testing \\
+HU34 & Crear pruebas para consulta de temas IA & closed & medium & testing \\
+HU35 & Crear pruebas para niveles de dificultad & closed & medium & testing \\
+HU36 & Crear pruebas para generación específica & closed & medium & testing \\
+\#37 & Implement tie-breaker by average time & closed & high & enhancement \\
+\hline
+\end{tabular}
+\caption{Issues generadas por el prompt de historias de usuario}
+\label{tab:issues}
+\end{table}
+
+A continuación se documentan los prompts utilizados en el proyecto, siguiendo el formato de ingeniería de prompts:
+
+\subsection{Prompt 2: Sistema de Desempate}
+
+\textbf{Texto del prompt en inglés:}
+\begin{lstlisting}[language=bash]
+cuando hay muchos jugadores en una sala mas de 1 actualmente el banked no tiene una forma de hacer desempate por lo que te pido que lo realices haslo por tiempo si el promedio de tiempo que se tardo una persona en resolver es menor que del otro pues gana del o contrario no pero haslo sin romper el proyecto
+\end{lstlisting}
+
+\textbf{Análisis del prompt:}
+\begin{itemize}
+    \item \textbf{Contexto}: Identificación de un problema en el sistema de juego multijugador donde no existe mecanismo de desempate cuando múltiples jugadores alcanzan la misma puntuación.
+    \item \textbf{Instrucción}: Implementar un sistema de desempate basado en tiempo promedio de respuesta, donde el jugador con menor tiempo promedio gana.
+    \item \textbf{Restricciones}: La implementación no debe romper funcionalidades existentes del proyecto.
+    \item \textbf{Archivos afectados}: \texttt{hybridServer.js}
+    \item \textbf{Funcionalidades implementadas}: Sistema de captura de timestamps, cálculo de tiempo promedio, lógica de desempate por tiempo.
+\end{itemize}
+
+\subsection{Prompt 3: Corrección de GitHub Actions}
+
+\textbf{Texto del prompt en inglés:}
+\begin{lstlisting}[language=bash]
+en el work flow encontre este error: Run actions/dependency-review-action@v4
+
+Error: Dependency review is not supported on this repository. Please ensure that Dependency graph is enabled along with GitHub Advanced Security on private repositories
+\end{lstlisting}
+
+\textbf{Análisis del prompt:}
+\begin{itemize}
+    \item \textbf{Contexto}: Error en el workflow de GitHub Actions relacionado con la acción de revisión de dependencias.
+    \item \textbf{Instrucción}: Solucionar el error sin requerir GitHub Advanced Security.
+    \item \textbf{Restricciones}: Mantener la funcionalidad de auditoría de dependencias.
+    \item \textbf{Archivos afectados}: \texttt{.github/workflows/test.yml}
+    \item \textbf{Funcionalidades implementadas}: Reemplazo de \texttt{dependency-review-action} con \texttt{npm audit}, mantenimiento de auditoría de seguridad.
+\end{itemize}
+
+\subsection{Prompt 4: Arquitectura de Sistemas en Tiempo Real}
+
+\textbf{Texto del prompt en inglés:}
+\begin{lstlisting}[language=bash]
+You are a senior backend architect specializing in real-time multiplayer systems. Given a Socket.IO server that manages game sessions and authentication with Firebase, analiza los event handlers para detectar condiciones de carrera, fallos de seguridad y cuellos de botella de rendimiento. Sugiere e implementa mejoras para:
+- Room management and synchronization
+- Authentication and token validation
+- Error handling and event documentation
+Output: Detailed report of issues found, recommended changes, and refactored code snippets.
+\end{lstlisting}
+
+\textbf{Análisis del prompt:}
+\begin{itemize}
+    \item \textbf{Contexto}: Necesidad de fortalecer la arquitectura de eventos en tiempo real del servidor Socket.IO.
+    \item \textbf{Instrucción}: Analizar y mejorar la gestión de salas, autenticación y manejo de errores.
+    \item \textbf{Restricciones}: Enfocarse en condiciones de carrera, seguridad y rendimiento.
+    \item \textbf{Archivos afectados}: \texttt{hybridServer.js}
+    \item \textbf{Funcionalidades implementadas}: Mejoras en sincronización, validación de tokens y documentación de eventos.
+\end{itemize}
+
+\subsection{Prompt 5: Seguridad de Autenticación}
+
+\textbf{Texto del prompt en inglés:}
+\begin{lstlisting}[language=bash]
+You are a security-focused AI assistant. Given an Express middleware for Firebase JWT authentication, audita el código para vulnerabilidades incluyendo extracción de token, verificación y manejo de errores. Sugiere mejoras para:
+- Handling malformed or missing tokens
+- Preventing replay attacks
+- Logging and monitoring authentication failures
+Output: Revised middleware function with enhanced security and inline comments.
+\end{lstlisting}
+
+\textbf{Análisis del prompt:}
+\begin{itemize}
+    \item \textbf{Contexto}: Necesidad de reforzar la seguridad en la autenticación JWT.
+    \item \textbf{Instrucción}: Auditar y mejorar el middleware de autenticación para prevenir vulnerabilidades.
+    \item \textbf{Restricciones}: Enfocarse en tokens malformados, ataques de repetición y logging.
+    \item \textbf{Archivos afectados}: \texttt{middleware/authenticate.js}
+    \item \textbf{Funcionalidades implementadas}: Mejoras en validación de tokens, prevención de ataques y trazabilidad de errores.
+\end{itemize}
+
+\subsection{Prompt 6: Automatización de Testing}
+
+\textbf{Texto del prompt en inglés:}
+\begin{lstlisting}[language=bash]
+You are a Senior DevOps Engineer and QA Automation Architect. For the backend-v1 project, design and implement a GitHub Actions CI/CD workflow that:
+- Efficiently installs and caches all required dependencies (npm, node_modules, testing tools).
+- Executes only the test scripts and steps that are actually present in the project (unit, integration, coverage).
+- Automatically cleans up old artifacts and logs, retaining only the last 14 days.
+- Ensures idempotence, atomicity, and safe rollback on failures.
+- Optimizes for speed, resource usage, and maintainability.
+- Excludes notification steps and any invented or non-existent functionality.
+- Embeds clear documentation and comments for every step, variable, and condition.
+Output: The optimized workflow file, with comments and a brief justification for each improvement implemented.
+\end{lstlisting}
+
+\textbf{Análisis del prompt:}
+\begin{itemize}
+    \item \textbf{Contexto}: Necesidad de implementar un pipeline CI/CD robusto y eficiente.
+    \item \textbf{Instrucción}: Diseñar workflow de GitHub Actions optimizado para testing y deployment.
+    \item \textbf{Restricciones}: Enfocarse en eficiencia, mantenibilidad y limpieza automática.
+    \item \textbf{Archivos afectados}: \texttt{.github/workflows/test.yml}
+    \item \textbf{Funcionalidades implementadas}: Pipeline CI/CD optimizado, limpieza automática, documentación integrada.
+\end{itemize}
+
+\section{Resultados}
+
+La interacción humano-IA permitió completar exitosamente el proyecto con los siguientes resultados:
+
+\subsection{Implementación del Sistema de Desempate}
+\begin{itemize}
+    \item Captura automática de timestamps al enviar preguntas y recibir respuestas
+    \item Cálculo de tiempo promedio de respuesta por jugador
+    \item Lógica de desempate que prioriza puntuación y usa tiempo como criterio secundario
+    \item Mantenimiento de compatibilidad con funcionalidades existentes
+\end{itemize}
+
+\subsection{Corrección de Workflows}
+\begin{itemize}
+    \item Solución del error de \texttt{dependency-review-action} sin requerir GitHub Advanced Security
+    \item Implementación de auditoría de dependencias usando \texttt{npm audit}
+    \item Mantenimiento de funcionalidad de seguridad en el pipeline CI/CD
+\end{itemize}
+
+\subsection{Métricas de Calidad}
+\begin{itemize}
+    \item Cobertura de tests mantenida en 95\%+
+    \item Sin errores de sintaxis en archivos modificados
+    \item Funcionalidad existente preservada completamente
+    \item Documentación actualizada y mantenida
+\end{itemize}
+
+
+\section{Conclusión}
+
+Este proyecto demuestra la efectividad de la colaboración entre la creatividad humana y la potencia de la Inteligencia Artificial en el desarrollo de software. La implementación exitosa del sistema de desempate y la resolución de problemas técnicos complejos evidencian cómo la IA puede servir como un multiplicador de capacidades cuando se utiliza con prompts bien estructurados.
+
+La importancia de esta colaboración radica en varios aspectos fundamentales:
+
+\textbf{Complementariedad de Habilidades}: Mientras el estudiante aportó la visión arquitectónica, el análisis de requerimientos y la toma de decisiones estratégicas, la IA contribuyó con implementación técnica precisa, análisis de código exhaustivo y generación de soluciones robustas.
+
+\textbf{Eficiencia en el Desarrollo}: La capacidad de la IA para procesar grandes volúmenes de código y generar implementaciones funcionales en tiempo récord permitió acelerar significativamente el ciclo de desarrollo.
+
+\textbf{Calidad Técnica}: La precisión de la IA en la implementación de algoritmos complejos y la atención al detalle en el manejo de casos edge resultó en código de alta calidad y robustez.
+
+\textbf{Innovación en Metodología}: El uso de ingeniería de prompts en inglés demostró ser una metodología efectiva para maximizar la comprensión y precisión de los sistemas de IA.
+
+
+Este proyecto establece un precedente para futuras colaboraciones humano-IA en el desarrollo de software, mostrando que la combinación de creatividad humana, capacidad técnica de la IA y metodologías de gestión estructurada puede producir resultados superiores a los obtenidos por cualquiera de los componentes por separado.
+
+La evolución continua de las herramientas de IA promete ampliar aún más las posibilidades de esta colaboración, transformando fundamentalmente la manera en que concebimos y ejecutamos el desarrollo de software en el siglo XXI.
+
+\end{document}
