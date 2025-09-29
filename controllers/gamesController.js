@@ -17,7 +17,8 @@ exports.listPublicGames = async (req, res) => {
 // Delete a public game by its creator
 exports.deletePublicGame = async (req, res) => {
   const { gameId } = req.params;
-  const userId = req.user.id; // Assuming req.user contains authenticated user info
+  // Firebase token decoded: req.user.uid
+  const userId = req.user && (req.user.uid || req.user.id);
 
   try {
     const gameRef = db.collection('games').doc(gameId);
@@ -28,8 +29,9 @@ exports.deletePublicGame = async (req, res) => {
     }
 
     const gameData = gameDoc.data();
-
-    if (gameData.createdBy !== userId) {
+    // El campo puede ser hostId o createdBy según cómo se creó la partida
+    const creatorId = gameData.createdBy || gameData.hostId;
+    if (!creatorId || creatorId !== userId) {
       return res.status(403).json({ error: 'You are not authorized to delete this game' });
     }
 
